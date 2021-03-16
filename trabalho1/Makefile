@@ -1,5 +1,5 @@
 CC = gcc
-LDFLAGS = -lwiringPi -lpthread
+LDFLAGS = -lwiringPi -lpthread -lncurses
 BLDDIR = .
 INCDIR = $(BLDDIR)/inc
 SRCDIR = $(BLDDIR)/src

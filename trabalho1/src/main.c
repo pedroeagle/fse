@@ -1,11 +1,10 @@
-#include <stdio.h>
-#include <string.h>
 #include "crc16.h"
 #include "uart.h"
 #include "display.h"
 #include "gpio.h"
 #include "pid.h"
 #include "csv.h"
+#include "main.h"
 
 #define CODIGO_CLIENTE 0x00
 #define CODIGO_SERVIDOR 0x01
@@ -23,15 +22,17 @@
 #define CMD_ERROR 0xE1
 #define CMD_STRING_OK 0xC1
 
+
 int main(int argc, const char * argv[]) {
-    CSV();
+    menu();
+    /*CSV();
     float a[5];
     a[0] = 1.5;
     a[1] = 3.6;
     a[2] = 89.5;
     a[3] = 100;
     a[4] = 105;
-    insert_line(a, 5);
+    insert_line(a, 5);*/
     /*int uart = UART();
     int internal_temperature = get_internal_temperature(uart);
     pid_configura_constantes(100, 1, 1.5);
@@ -41,8 +42,7 @@ int main(int argc, const char * argv[]) {
     printf("Start GPIO: %d\n", GPIO());
     turn_on_fan();
     delay(1000);
-    printf("Terminou\n");
-    */
+    printf("Terminou\n");*/
     /*DISPLAY();
     write_first("Teste 123");
     write_second("321 etseT");*/
