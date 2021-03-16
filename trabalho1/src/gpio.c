@@ -25,8 +25,9 @@ void * turn_off_fan_thread(void *vargp){
     pinMode(FAN_GPIO_PIN, OUTPUT);
     softPwmWrite(FAN_GPIO_PIN, 0);
     printf("Desligado!\n");
+    pthread_cancel(TURN_OFF_FAN_PTHREAD_ID);
 }
-void turn_on_fan(){
+void * turn_on_fan(void *vargp){
     pthread_create(&TURN_ON_FAN_PTHREAD_ID, NULL, turn_on_fan_thread, NULL);
     pthread_join(turn_on_fan_thread, NULL);
     //colocar aqui a função que de verificação se o fan deve permanecer ligado
