@@ -4,6 +4,8 @@
 #include "uart.h"
 #include "display.h"
 #include "gpio.h"
+#include "pid.h"
+#include "csv.h"
 
 #define CODIGO_CLIENTE 0x00
 #define CODIGO_SERVIDOR 0x01
@@ -22,18 +24,31 @@
 #define CMD_STRING_OK 0xC1
 
 int main(int argc, const char * argv[]) {
-    printf("Começou\n");
+    CSV();
+    float a[5];
+    a[0] = 1.5;
+    a[1] = 3.6;
+    a[2] = 89.5;
+    a[3] = 100;
+    a[4] = 105;
+    insert_line(a, 5);
+    /*int uart = UART();
+    int internal_temperature = get_internal_temperature(uart);
+    pid_configura_constantes(100, 1, 1.5);
+    pid_atualiza_referencia(internal_temperature);
+    printf("%lf", pid_controle(20));*/
+    /*printf("Começou\n");
     printf("Start GPIO: %d\n", GPIO());
     turn_on_fan();
     delay(1000);
     printf("Terminou\n");
-    int uart = UART();
+    */
     /*DISPLAY();
     write_first("Teste 123");
     write_second("321 etseT");*/
 
-    int internal_temperature = get_internal_temperature(uart);
-    int potentiometer_temperature =  get_potentiometer_temperature(uart);
+    
+    //int potentiometer_temperature =  get_potentiometer_temperature(uart);
     // == SOLICITAR INTEIRO ==
     /*unsigned char codigo_inteiro[3] = {CODIGO_SERVIDOR, CODIGO_CMD_SOLICITA, CMD_SOLICITA_INTEIRO};
     bytesCRC crc;
