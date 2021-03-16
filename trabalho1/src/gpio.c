@@ -1,6 +1,6 @@
 #include "gpio.h"
 #define RESISTOR_GPIO_PIN 4
-#define FAN_GPIO_PIN 4
+#define FAN_GPIO_PIN 5
 
 #define FAN_INTENSITY 80
 #define RESISTOR_INTENSITY 20
