@@ -24,7 +24,6 @@
 
 
 int main(int argc, const char * argv[]) {
-    menu();
     /*CSV();
     float a[5];
     a[0] = 1.5;
@@ -38,11 +37,12 @@ int main(int argc, const char * argv[]) {
     pid_configura_constantes(100, 1, 1.5);
     pid_atualiza_referencia(internal_temperature);
     printf("%lf", pid_controle(20));*/
-    /*printf("Começou\n");
+    menu();
+    printf("Começou\n");
     printf("Start GPIO: %d\n", GPIO());
     turn_on_fan();
     delay(1000);
-    printf("Terminou\n");*/
+    printf("Terminou\n");
     /*DISPLAY();
     write_first("Teste 123");
     write_second("321 etseT");*/

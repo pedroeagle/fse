@@ -11,6 +11,8 @@ int GPIO(){
     return wiringPiSetup ();
 }
 void * turn_on_fan_thread(void *vargp){
+    pinMode(FAN_GPIO_PIN, OUTPUT);
+    softPwmCreate(FAN_GPIO_PIN, 1,100);
     while(1){
         softPwmWrite (FAN_GPIO_PIN, FAN_INTENSITY);
         printf("Girando o FAN\n");
@@ -20,6 +22,8 @@ void * turn_on_fan_thread(void *vargp){
 void * turn_off_fan_thread(void *vargp){
     printf("Desligando FAN\n");
     pthread_cancel(TURN_ON_FAN_PTHREAD_ID);
+    pinMode(FAN_GPIO_PIN, OUTPUT);
+    softPwmWrite(FAN_GPIO_PIN, 0);
     printf("Desligado!\n");
 }
 void turn_on_fan(){
