@@ -23,7 +23,9 @@
 #define CMD_STRING_OK 0xC1
 
 pthread_t MENU_PTHREAD_ID, UPDATE_TEMPERATURES_PTHREAD_ID;
-
+pthread_t get_update_temperatures_pthread_id(){
+    return UPDATE_TEMPERATURES_PTHREAD_ID;
+}
 void start(){
     //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
     pthread_create(&MENU_PTHREAD_ID, NULL, menu, NULL);

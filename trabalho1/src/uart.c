@@ -7,6 +7,7 @@
 
 const unsigned char MATRICULA[4] = {2, 6, 3, 5};
 float potentiometer = 0, internal = 0;
+
 int UART() {
     int uart0_filestream = -1;
 

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "uart.h"
 
+pthread_t get_update_temperatures_pthread_id();
 void clear_terminal(){
     system("clear");
     fflush(stdin);
@@ -57,6 +58,7 @@ void  * menu(void *vargp){
                 read_terminal();
         }
     }while(option!='0');
+    pthread_cancel(get_update_temperatures_pthread_id());
 }
 
 
