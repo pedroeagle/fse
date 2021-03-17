@@ -28,10 +28,10 @@ pthread_t get_update_temperatures_pthread_id(){
 }
 void start(){
     //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
-    pthread_create(&MENU_PTHREAD_ID, NULL, menu, NULL);
     pthread_create(&UPDATE_TEMPERATURES_PTHREAD_ID, NULL, update_temperatures, NULL);
-    pthread_join(MENU_PTHREAD_ID, NULL);
+    pthread_create(&MENU_PTHREAD_ID, NULL, menu, NULL);
     pthread_join(UPDATE_TEMPERATURES_PTHREAD_ID, NULL);
+    pthread_join(MENU_PTHREAD_ID, NULL);
 }
 
 int main(int argc, const char * argv[]) {

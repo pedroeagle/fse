@@ -12,8 +12,12 @@ void clear_terminal(){
     fflush(stdin);
 }
 void temperature_menu(){
+    if(!get_potentiometer_temperature() || !get_internal_temperature()){
+        delay(2000);
+    }
     float temperatura_potenciometro = get_potentiometer_temperature();
     float temperatura_interna = get_internal_temperature();
+    //while(!temperatura_potenciometro || !temperatura_interna);
     printf("####################    MONITOR  DE TEMPERATURA   ####################\n");
     printf("Temperaturas atuais: \n");
     printf("TI: %lf, TP: %lf\n\n", temperatura_interna, temperatura_potenciometro);
