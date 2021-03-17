@@ -6,7 +6,7 @@
 #define CODIGO_TEMPERATURA_POTENCIOMETRO 0xC2
 
 const unsigned char MATRICULA[4] = {2, 6, 3, 5};
-float potentiometer = 0, internal = 0;
+float potentiometer = 0.0, internal = 0.0, external = 0.0;
 
 int UART() {
     int uart0_filestream = -1;
@@ -30,7 +30,7 @@ int UART() {
     tcsetattr(uart0_filestream, TCSANOW, &options);
     return uart0_filestream;
 }
-unsigned char read_uart(int uart, unsigned char * code, int size){
+float read_uart(int uart, unsigned char * code, int size){
     unsigned char msg[size+4+2];
     memcpy(msg, code, size);
     memcpy(&msg[size], MATRICULA, 4);
@@ -99,10 +99,18 @@ float get_potentiometer_temperature_uart(int uart){
     return read_uart(uart, code, 3);
 }
 void * update_temperatures(void * vargp){
-    int uart = UART();
+    DISPLAY();
     while(1){
+        int uart = UART();
+        I2C();
         potentiometer = get_potentiometer_temperature_uart(uart);
         internal = get_internal_temperature_uart(uart);
+        external = get_external_temperature_i2c();
+        char first[15], second[15];
+        sprintf(first, "TI:%.2f TE:%.2f", internal, external);
+        sprintf(second, "TR:%.2f", potentiometer);
+        write_first(first);
+        write_second(second);
         delay(1000);
     }
 }
@@ -111,4 +119,7 @@ float get_potentiometer_temperature(){
 }
 float get_internal_temperature(){
     return internal;
+}
+float get_external_temperature(){
+    return external;
 }

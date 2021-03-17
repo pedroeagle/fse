@@ -19,7 +19,7 @@ void clear_terminal(){
     fflush(stdin);
 }
 void temperature_menu(){
-    if(!get_potentiometer_temperature() || !get_internal_temperature()){
+    while(!get_potentiometer_temperature() || !get_internal_temperature() || !get_external_temperature()){
         delay(2000);
     }
     float temperatura_potenciometro = get_potentiometer_temperature();
@@ -28,7 +28,7 @@ void temperature_menu(){
     //while(!temperatura_potenciometro || !temperatura_interna);
     printf("####################    MONITOR  DE TEMPERATURA   ####################\n");
     printf("Temperaturas atuais: \n");
-    printf("TI: %lf, TR: %lf, TE: %lf\n\n", temperatura_interna, temperatura_potenciometro, temperatura_externa);
+    printf("TI: %.2f, TR: %.2f, TE: %.2f\n\n", temperatura_interna, temperatura_potenciometro, temperatura_externa);
     printf("----------------------------------------------------------------------\n");
 }
 float read_terminal(){

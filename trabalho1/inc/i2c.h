@@ -3,5 +3,5 @@
 
 #include "bme280.h"
 void I2C();
-float get_external_temperature();
+float get_external_temperature_i2c();
 #endif

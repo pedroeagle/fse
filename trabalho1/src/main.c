@@ -29,8 +29,6 @@ void start(){
 }
 
 int main(int argc, const char * argv[]) {
-    UART();
-    I2C();
     //GPIO();
     /*CSV();
     float a[5];
