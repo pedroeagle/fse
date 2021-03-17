@@ -1,5 +1,5 @@
-#ifndef UART_
-#define UART_
+#ifndef UART_H_
+#define UART_H_
 #include <unistd.h>         //Used for UART
 #include <fcntl.h>          //Used for UART
 #include <termios.h>        //Used for UART

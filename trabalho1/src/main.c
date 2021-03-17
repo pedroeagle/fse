@@ -1,9 +1,3 @@
-#include "crc16.h"
-#include "uart.h"
-#include "display.h"
-#include "gpio.h"
-#include "pid.h"
-#include "csv.h"
 #include "main.h"
 
 #define CODIGO_CLIENTE 0x00
@@ -35,6 +29,8 @@ void start(){
 }
 
 int main(int argc, const char * argv[]) {
+    UART();
+    I2C();
     //GPIO();
     /*CSV();
     float a[5];
@@ -47,6 +43,7 @@ int main(int argc, const char * argv[]) {
     /*int uart = UART();
     int internal_temperature = get_internal_temperature(uart);*/
     start();
+
     //menu();
     /*pid_configura_constantes(100, 1, 1.5);
     pid_atualiza_referencia(internal_temperature);

@@ -5,6 +5,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include "uart.h"
+#include "crc16.h"
+#include "uart.h"
+#include "display.h"
+#include "gpio.h"
+#include "pid.h"
+#include "csv.h"
+#include "i2c.h"
 
 pthread_t get_update_temperatures_pthread_id();
 void clear_terminal(){
@@ -17,10 +24,11 @@ void temperature_menu(){
     }
     float temperatura_potenciometro = get_potentiometer_temperature();
     float temperatura_interna = get_internal_temperature();
+    float temperatura_externa= get_external_temperature();
     //while(!temperatura_potenciometro || !temperatura_interna);
     printf("####################    MONITOR  DE TEMPERATURA   ####################\n");
     printf("Temperaturas atuais: \n");
-    printf("TI: %lf, TP: %lf\n\n", temperatura_interna, temperatura_potenciometro);
+    printf("TI: %lf, TR: %lf, TE: %lf\n\n", temperatura_interna, temperatura_potenciometro, temperatura_externa);
     printf("----------------------------------------------------------------------\n");
 }
 float read_terminal(){
