@@ -22,14 +22,14 @@
 #define CMD_ERROR 0xE1
 #define CMD_STRING_OK 0xC1
 
-pthread_t MENU_PTHREAD_ID, TURN_ON_FAN_PTHREAD_ID;
+pthread_t MENU_PTHREAD_ID, UPDATE_TEMPERATURES_PTHREAD_ID;
 
 void start(){
     //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
     pthread_create(&MENU_PTHREAD_ID, NULL, menu, NULL);
-    pthread_create(&TURN_ON_FAN_PTHREAD_ID, NULL, turn_on_fan, NULL);
+    pthread_create(&UPDATE_TEMPERATURES_PTHREAD_ID, NULL, update_temperatures, NULL);
     pthread_join(MENU_PTHREAD_ID, NULL);
-    pthread_join(TURN_ON_FAN_PTHREAD_ID, NULL);
+    pthread_join(UPDATE_TEMPERATURES_PTHREAD_ID, NULL);
 }
 
 int main(int argc, const char * argv[]) {
@@ -42,8 +42,10 @@ int main(int argc, const char * argv[]) {
     a[3] = 100;
     a[4] = 105;
     insert_line(a, 5);*/
-    int uart = UART();
-    int internal_temperature = get_internal_temperature(uart);
+    /*int uart = UART();
+    int internal_temperature = get_internal_temperature(uart);*/
+    start();
+    //menu();
     /*pid_configura_constantes(100, 1, 1.5);
     pid_atualiza_referencia(internal_temperature);
     printf("%lf", pid_controle(20));*/

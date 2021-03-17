@@ -6,6 +6,7 @@
 #define CODIGO_TEMPERATURA_POTENCIOMETRO 0xC2
 
 const unsigned char MATRICULA[4] = {2, 6, 3, 5};
+float potentiometer = 0, internal = 0;
 int UART() {
     int uart0_filestream = -1;
 
@@ -16,7 +17,7 @@ int UART() {
     }
     else
     {
-        printf("UART inicializada!\n");
+        //printf("UART inicializada!\n");
     }    
     struct termios options;
     tcgetattr(uart0_filestream, &options);
@@ -38,7 +39,7 @@ unsigned char read_uart(int uart, unsigned char * code, int size){
 
     if (uart != -1)
     {
-        printf("Escrevendo caracteres na UART ...");
+        //printf("Escrevendo caracteres na UART ...");
         int count = write(uart, msg, size+4+2);
         if (count < 0)
         {
@@ -46,7 +47,7 @@ unsigned char read_uart(int uart, unsigned char * code, int size){
         }
         else
         {
-            printf("escrito.\n");
+            //printf("escrito.\n");
         }
     }
 
@@ -60,11 +61,11 @@ unsigned char read_uart(int uart, unsigned char * code, int size){
         int rx_length = read(uart, (void*)rx_buffer, 255);      //Filestream, buffer to store in, number of bytes to read (max)
         if (rx_length < 0)
         {
-            printf("Erro na leitura.\n"); //An error occured (will occur if there are no bytes)
+            //printf("Erro na leitura.\n"); //An error occured (will occur if there are no bytes)
         }
         else if (rx_length == 0)
         {
-            printf("Nenhum dado disponível.\n"); //No data waiting
+            //printf("Nenhum dado disponível.\n"); //No data waiting
         }
         else
         {
@@ -88,11 +89,25 @@ unsigned char read_uart(int uart, unsigned char * code, int size){
 
     close(uart);
 }
-float get_internal_temperature(int uart) {
+float get_internal_temperature_uart(int uart) {
     unsigned char code[3] = {CODIGO_SERVIDOR, SUB_CODIGO, CODIGO_TEMPERATURA_INTERNA};
     return read_uart(uart, code, 3);
 }
-float get_potentiometer_temperature(int uart){
+float get_potentiometer_temperature_uart(int uart){
     unsigned char code[3] = {CODIGO_SERVIDOR, SUB_CODIGO, CODIGO_TEMPERATURA_POTENCIOMETRO};
     return read_uart(uart, code, 3);
+}
+void * update_temperatures(void * vargp){
+    int uart = UART();
+    while(1){
+        potentiometer = get_potentiometer_temperature_uart(uart);
+        internal = get_internal_temperature_uart(uart);
+        delay(1000);
+    }
+}
+float get_potentiometer_temperature(){
+    return potentiometer;
+}
+float get_internal_temperature(){
+    return internal;
 }

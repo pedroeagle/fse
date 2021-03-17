@@ -4,16 +4,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "uart.h"
 
 void clear_terminal(){
     system("clear");
     fflush(stdin);
 }
 void temperature_menu(){
+    float temperatura_potenciometro = get_potentiometer_temperature();
+    float temperatura_interna = get_internal_temperature();
     printf("####################    MONITOR  DE TEMPERATURA   ####################\n");
     printf("Temperaturas atuais: \n");
-    printf("XXXXXXXXXXXX\n\n");
-    printf("-----------------------------------------------------------------------\n");
+    printf("TI: %lf, TP: %lf\n\n", temperatura_interna, temperatura_potenciometro);
+    printf("----------------------------------------------------------------------\n");
 }
 float read_terminal(){
     float MAX = 80.00, MIN = 10.0;
@@ -35,7 +38,7 @@ float read_terminal(){
     }while(temperature < MIN || temperature > MAX);
     return temperature;
 }
-void * menu(void *vargp){
+void  * menu(void *vargp){
     char option;
     do{
         clear_terminal();
