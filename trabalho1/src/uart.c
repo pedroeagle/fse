@@ -69,9 +69,20 @@ unsigned char read_uart(int uart, unsigned char * code, int size){
         else
         {
             numero resposta;
+            bytesCRC crc_recebido;
+            unsigned char mensagem[7];
+            //movendo 2 bytes do CRC + 4 da mensagem pra iniciar a leitura do número
             memcpy(resposta.bytes, &rx_buffer[rx_length-6], 4);
-            printf("%f\n", resposta.n);
-            return resposta.n;
+            //movendo 2 bytes do CRC pra iniciar a leitura do CRC
+            memcpy(crc_recebido.bytes, &rx_buffer[rx_length-2], 2);
+            //copiando a mensagem removendo os 2 bytes do CRC
+            memcpy(mensagem, rx_buffer, 7);
+
+            if(verifica_crc(rx_buffer, 7, crc_recebido)){
+                return resposta.n;
+            }else{
+                return -1;
+            }
         }
     }
 

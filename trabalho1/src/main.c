@@ -33,7 +33,7 @@ void start(){
 }
 
 int main(int argc, const char * argv[]) {
-    GPIO();
+    //GPIO();
     /*CSV();
     float a[5];
     a[0] = 1.5;
@@ -42,12 +42,12 @@ int main(int argc, const char * argv[]) {
     a[3] = 100;
     a[4] = 105;
     insert_line(a, 5);*/
-    /*int uart = UART();
+    int uart = UART();
     int internal_temperature = get_internal_temperature(uart);
-    pid_configura_constantes(100, 1, 1.5);
+    /*pid_configura_constantes(100, 1, 1.5);
     pid_atualiza_referencia(internal_temperature);
     printf("%lf", pid_controle(20));*/
-    start();
+    //start();
     /*DISPLAY();
     write_first("Teste 123");
     write_second("321 etseT");*/

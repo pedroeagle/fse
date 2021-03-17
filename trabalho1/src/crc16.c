@@ -52,3 +52,13 @@ short calcula_CRC(unsigned char *commands, int size) {
 	}
 	return crc;
 }
+int verifica_crc(unsigned char *mensagem, int size, bytesCRC crc_recebido){
+    bytesCRC crc_calculado;
+    crc_calculado.crc = calcula_CRC(mensagem, size);
+    if (crc_calculado.crc == crc_recebido.crc){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}

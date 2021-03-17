@@ -17,6 +17,8 @@ typedef union {
     uint8_t bytes[2];
 } bytesCRC;
 
+int verifica_crc(unsigned char *mensagem, int size, bytesCRC crc_recebido);
+
 typedef union {
     float n;
     uint8_t bytes[sizeof(float)];

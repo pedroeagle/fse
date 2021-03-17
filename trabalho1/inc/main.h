@@ -35,7 +35,7 @@ float read_terminal(){
     }while(temperature < MIN || temperature > MAX);
     return temperature;
 }
-void menu(){
+void * menu(void *vargp){
     char option;
     do{
         clear_terminal();

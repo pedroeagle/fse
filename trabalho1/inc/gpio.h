@@ -9,7 +9,6 @@
 
 int GPIO();
 int TURN_OFF_GPIO();
-void turn_on_fan();
-void turn_off_fan();
+void * turn_on_fan(void * argvp);
 void a();
 #endif
