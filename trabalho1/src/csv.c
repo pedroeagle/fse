@@ -14,11 +14,10 @@ void CSV(){
     sprintf(filename, "log/%s", ctime(&now));
     filename[strlen(filename)-1] = 0;
     strcpy(filename, strcat(filename, ".csv"));
-    printf("%s\n", filename);
 
     fp=fopen(filename,"w+");
     
-    fprintf(fp,"Temperatura Interna, Temperatura do Potenciômetro");
+    fprintf(fp,"Temperatura Interna, Temperatura Externa, Temperatura do Potenciômetro, Temperatura do Terminal, Temperatura de Referência");
     fclose(fp);
  
 }
@@ -27,7 +26,7 @@ void insert_line(float values[], int size){
     fp=fopen(filename, "a");
     char line[1000];
     sprintf(line, "\n%f", values[0]);
-    for(int i = 1; i < sizeof(values); i++){
+    for(int i = 1; i < size; i++){
         char value[100];
         sprintf(value, ", %f",values[i]);
         strcpy(line, strcat(line, value));

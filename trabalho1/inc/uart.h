@@ -12,7 +12,7 @@
 int UART();
 float get_internal_temperature_uart(int uart);
 float get_potentiometer_temperature_uart(int uart);
-void * update_temperatures(void * vargp);
+//void * update_temperatures(void * vargp);
 float get_potentiometer_temperature();
 float get_internal_temperature();
 float get_external_temperature();

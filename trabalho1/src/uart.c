@@ -6,7 +6,7 @@
 #define CODIGO_TEMPERATURA_POTENCIOMETRO 0xC2
 
 const unsigned char MATRICULA[4] = {2, 6, 3, 5};
-float potentiometer = 0.0, internal = 0.0, external = 0.0;
+//float potentiometer = 0.0, internal = 0.0, external = 0.0;
 
 int UART() {
     int uart0_filestream = -1;
@@ -98,7 +98,7 @@ float get_potentiometer_temperature_uart(int uart){
     unsigned char code[3] = {CODIGO_SERVIDOR, SUB_CODIGO, CODIGO_TEMPERATURA_POTENCIOMETRO};
     return read_uart(uart, code, 3);
 }
-void * update_temperatures(void * vargp){
+/*void * update_temperatures(void * vargp){
     DISPLAY();
     while(1){
         int uart = UART();
@@ -113,8 +113,8 @@ void * update_temperatures(void * vargp){
         write_second(second);
         delay(1000);
     }
-}
-float get_potentiometer_temperature(){
+}*/
+/*float get_potentiometer_temperature(){
     return potentiometer;
 }
 float get_internal_temperature(){
@@ -122,4 +122,4 @@ float get_internal_temperature(){
 }
 float get_external_temperature(){
     return external;
-}
+}*/

@@ -1,26 +1,13 @@
-#ifndef MAIN_H_
-#define MAIN_H_
+#include "menu.h"
+#include "temperature.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "uart.h"
-#include "crc16.h"
-#include "uart.h"
-#include "display.h"
-#include "gpio.h"
-#include "pid.h"
-#include "csv.h"
-#include "i2c.h"
-
-pthread_t get_update_temperatures_pthread_id();
 void clear_terminal(){
     system("clear");
     fflush(stdin);
 }
 void temperature_menu(){
     while(!get_potentiometer_temperature() || !get_internal_temperature() || !get_external_temperature()){
-        delay(2000);
+        delay(500);
     }
     float temperatura_potenciometro = get_potentiometer_temperature();
     float temperatura_interna = get_internal_temperature();
@@ -70,8 +57,6 @@ void  * menu(void *vargp){
                 read_terminal();
         }
     }while(option!='0');
-    pthread_cancel(get_update_temperatures_pthread_id());
+    finish();
+    return;
 }
-
-
-#endif

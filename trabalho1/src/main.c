@@ -1,4 +1,7 @@
-#include "main.h"
+#include <pthread.h>
+#include "menu.h"
+#include "temperature.h"
+#include "display.h"
 
 #define CODIGO_CLIENTE 0x00
 #define CODIGO_SERVIDOR 0x01
@@ -26,6 +29,10 @@ void start(){
     pthread_create(&MENU_PTHREAD_ID, NULL, menu, NULL);
     pthread_join(UPDATE_TEMPERATURES_PTHREAD_ID, NULL);
     pthread_join(MENU_PTHREAD_ID, NULL);
+}
+void finish(){
+    pthread_cancel(MENU_PTHREAD_ID);
+    pthread_cancel(UPDATE_TEMPERATURES_PTHREAD_ID);
 }
 
 int main(int argc, const char * argv[]) {
