@@ -47,10 +47,6 @@ float read_uart(int uart, unsigned char * code, int size){
             printf("UART TX error\n");
             return count;
         }
-        else
-        {
-            //printf("escrito.\n");
-        }
     }
 
     sleep(1);
@@ -61,13 +57,9 @@ float read_uart(int uart, unsigned char * code, int size){
         // Read up to 255 characters from the port if they are there
        	unsigned char rx_buffer[256];
         int rx_length = read(uart, (void*)rx_buffer, 255);      //Filestream, buffer to store in, number of bytes to read (max)
-        if (rx_length < 0)
+        if (rx_length <= 0)
         {
-            //printf("Erro na leitura.\n"); //An error occured (will occur if there are no bytes)
-        }
-        else if (rx_length == 0)
-        {
-            //printf("Nenhum dado disponível.\n"); //No data waiting
+            return -1;
         }
         else
         {
@@ -98,10 +90,6 @@ float get_internal_temperature_uart(int uart) {
     if(temperature < 0){
         return get_internal_temperature();
     }
-    /*if(temperature == -1 || (diff>=15 && temperature >= get_external_temperature() && get_internal_temperature() >= get_external_temperature())){
-        printf("ERRO I\n");
-        return get_internal_temperature();
-    }*/
     return temperature;
 }
 float get_potentiometer_temperature_uart(int uart){
@@ -111,34 +99,5 @@ float get_potentiometer_temperature_uart(int uart){
     if(temperature < 0){
         return get_potentiometer_temperature();
     }
-    /*if(temperature == -1 || (diff>=15 && temperature > get_external_temperature() && get_potentiometer_temperature()>=get_external_temperature())){
-        printf("ERRO P\n");
-        return get_potentiometer_temperature();
-    }*/
     return temperature;
 }
-/*void * update_temperatures(void * vargp){
-    DISPLAY();
-    while(1){
-        int uart = UART();
-        I2C();
-        potentiometer = get_potentiometer_temperature_uart(uart);
-        internal = get_internal_temperature_uart(uart);
-        external = get_external_temperature_i2c();
-        char first[15], second[15];
-        sprintf(first, "TI:%.2f TE:%.2f", internal, external);
-        sprintf(second, "TR:%.2f", potentiometer);
-        write_first(first);
-        write_second(second);
-        delay(1000);
-    }
-}*/
-/*float get_potentiometer_temperature(){
-    return potentiometer;
-}
-float get_internal_temperature(){
-    return internal;
-}
-float get_external_temperature(){
-    return external;
-}*/
