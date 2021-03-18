@@ -2,6 +2,7 @@
 #include "menu.h"
 #include "temperature.h"
 #include "display.h"
+#include "gpio.h"
 
 #define CODIGO_CLIENTE 0x00
 #define CODIGO_SERVIDOR 0x01
@@ -31,6 +32,8 @@ void start(){
     pthread_join(MENU_PTHREAD_ID, NULL);
 }
 void finish(){
+    DISPLAY();
+    turn_off();
     pthread_cancel(MENU_PTHREAD_ID);
     pthread_cancel(UPDATE_TEMPERATURES_PTHREAD_ID);
 }

@@ -9,6 +9,7 @@
 
 int GPIO();
 int TURN_OFF_GPIO();
-void * turn_on_fan(void * argvp);
-void a();
+void turn_on_fan(int intensity);
+void turn_on_resistor(int intensity);
+void turn_off();
 #endif

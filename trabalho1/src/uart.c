@@ -45,6 +45,7 @@ float read_uart(int uart, unsigned char * code, int size){
         if (count < 0)
         {
             printf("UART TX error\n");
+            return count;
         }
         else
         {
@@ -92,11 +93,29 @@ float read_uart(int uart, unsigned char * code, int size){
 }
 float get_internal_temperature_uart(int uart) {
     unsigned char code[3] = {CODIGO_SERVIDOR, SUB_CODIGO, CODIGO_TEMPERATURA_INTERNA};
-    return read_uart(uart, code, 3);
+    float temperature = read_uart(uart, code, 3);
+    float diff = abs(abs(get_internal_temperature()) - abs(temperature));
+    if(temperature < 0){
+        return get_internal_temperature();
+    }
+    /*if(temperature == -1 || (diff>=15 && temperature >= get_external_temperature() && get_internal_temperature() >= get_external_temperature())){
+        printf("ERRO I\n");
+        return get_internal_temperature();
+    }*/
+    return temperature;
 }
 float get_potentiometer_temperature_uart(int uart){
     unsigned char code[3] = {CODIGO_SERVIDOR, SUB_CODIGO, CODIGO_TEMPERATURA_POTENCIOMETRO};
-    return read_uart(uart, code, 3);
+    float temperature = read_uart(uart, code, 3);
+    float diff = abs(abs(get_potentiometer_temperature()) - abs(temperature));
+    if(temperature < 0){
+        return get_potentiometer_temperature();
+    }
+    /*if(temperature == -1 || (diff>=15 && temperature > get_external_temperature() && get_potentiometer_temperature()>=get_external_temperature())){
+        printf("ERRO P\n");
+        return get_potentiometer_temperature();
+    }*/
+    return temperature;
 }
 /*void * update_temperatures(void * vargp){
     DISPLAY();

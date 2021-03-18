@@ -12,21 +12,21 @@ void temperature_menu(){
     float temperatura_potenciometro = get_potentiometer_temperature();
     float temperatura_interna = get_internal_temperature();
     float temperatura_externa= get_external_temperature();
-    //while(!temperatura_potenciometro || !temperatura_interna);
+    float temperatura_referencia = get_reference_temperature();
+    float temperatura_terminal = get_terminal_temperature();
     printf("####################    MONITOR  DE TEMPERATURA   ####################\n");
     printf("Temperaturas atuais: \n");
-    printf("TI: %.2f, TR: %.2f, TE: %.2f\n\n", temperatura_interna, temperatura_potenciometro, temperatura_externa);
+    printf("TI: %.2f, TE: %.2f, TP: %.2f, TT: %.2f, TR: %.2f\n\n", temperatura_interna, temperatura_externa, temperatura_potenciometro, temperatura_terminal, temperatura_referencia);
     printf("----------------------------------------------------------------------\n");
 }
 float read_terminal(){
-    float MAX = 80.00, MIN = 10.0;
+    float MAX = 100.00, MIN = get_external_temperature();
     float temperature = -1;
     int error = 0;
     do{
         clear_terminal();
         temperature_menu();
         if(error){
-            
             printf("A temperatura deve ser maior que %f e menor que %f\n", MIN, MAX);
         }
         printf("Digite a temperatura desejada: ");
@@ -52,9 +52,13 @@ void  * menu(void *vargp){
         option = getchar();
         switch(option){
             case '1':
+                set_terminal_temperature(-1.0);
+                set_reference_temperature(get_potentiometer_temperature());
                 break;
             case '2':
-                read_terminal();
+                set_terminal_temperature(read_terminal());
+                set_reference_temperature(get_terminal_temperature());
+                break;
         }
     }while(option!='0');
     finish();
