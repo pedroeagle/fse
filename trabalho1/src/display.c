@@ -122,11 +122,9 @@ void lcd_init()   {
 }
 
 void DISPLAY(){
-    if (wiringPiSetup () == -1) exit (1);
+    wiringPiSetup ();
 
     fd = wiringPiI2CSetup(I2C_ADDR);
-
-    //printf("fd = %d ", fd);
 
     lcd_init(); // setup LCD
 }

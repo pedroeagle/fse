@@ -8,6 +8,7 @@
 #include "csv.h"
 #include "pid.h"
 #include "gpio.h"
+#include "menu.h"
 
 void * update_temperatures(void * vargp);
 float get_potentiometer_temperature();

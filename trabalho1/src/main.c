@@ -21,21 +21,21 @@
 #define CMD_ERROR 0xE1
 #define CMD_STRING_OK 0xC1
 
-pthread_t MENU_PTHREAD_ID, UPDATE_TEMPERATURES_PTHREAD_ID;
+pthread_t UPDATE_TEMPERATURES_PTHREAD_ID, READ_PTHREAD_ID;
 pthread_t get_update_temperatures_pthread_id(){
     return UPDATE_TEMPERATURES_PTHREAD_ID;
 }
 void start(){
     //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
     pthread_create(&UPDATE_TEMPERATURES_PTHREAD_ID, NULL, update_temperatures, NULL);
-    pthread_create(&MENU_PTHREAD_ID, NULL, menu, NULL);
+    pthread_create(&READ_PTHREAD_ID, NULL, read_menu, NULL);
     pthread_join(UPDATE_TEMPERATURES_PTHREAD_ID, NULL);
-    pthread_join(MENU_PTHREAD_ID, NULL);
+    pthread_join(READ_PTHREAD_ID, NULL);
 }
 void finish(){
     DISPLAY();
     turn_off();
-    pthread_cancel(MENU_PTHREAD_ID);
+    pthread_cancel(READ_PTHREAD_ID);
     pthread_cancel(UPDATE_TEMPERATURES_PTHREAD_ID);
 }
 void force_finish(int signal){

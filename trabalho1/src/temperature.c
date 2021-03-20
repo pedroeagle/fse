@@ -1,5 +1,5 @@
 #include "temperature.h"
-float potentiometer = 0.0, internal = 0.0, external = 0.0, terminal = 0.0, reference = 0.0, atuador = 0.0;
+float potentiometer = 0.0, internal = 0.0, external = 0.0, terminal = -1.0, reference = 0.0, atuador = 0.0;
 void * update_temperatures(void * vargp){
     CSV();
     pid_configura_constantes(5, 1, 5);
@@ -7,6 +7,7 @@ void * update_temperatures(void * vargp){
     I2C();
     GPIO();
     while(1){
+        menu();
         int uart = UART();
         potentiometer = get_potentiometer_temperature_uart(uart);
         internal = get_internal_temperature_uart(uart);
