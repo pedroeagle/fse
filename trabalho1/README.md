@@ -24,7 +24,6 @@ O projeto roda em uma Raspberry Pi 4 conectada a um Arduino. Conectada às placa
 
 Ao escolher, como temperatura de referência, a temperatura do potenciômetro esta então é atualizada para a TP mais atual. Ao selecionar a temperatura do terminal como referência a do potenciômetro é então substituída.
 A cada 2s é atualizado um arquivo csv no diretório `/log`. É criado um arquivo novo para cada execução, o nome do arquivo é a data e horário iniciais de execução do programa.
-Obs: Para que a temperatura de referência se atualize com a temperatura do potenciômetro é necessário que o usuário selecione a primeira opção do programa. Isto é feito para evitar que durante um experimento a temperatura de referência se altere, afentando a observação dos dados.
 
 ## 4. Funcionalidades
 O terminal atualizará na frequência de 1s o valor das temperaturas TI, TE, TP, TT, TR.<br>
