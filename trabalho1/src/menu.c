@@ -18,7 +18,7 @@ void clear_terminal(){
 }
 void temperature_menu(){
     while(!get_potentiometer_temperature() || !get_internal_temperature() || !get_external_temperature()){
-        usleep(500);
+        usleep(10000);
     }
     float temperatura_potenciometro = get_potentiometer_temperature();
     float temperatura_interna = get_internal_temperature();
@@ -129,7 +129,6 @@ void menu(){
 void * read_menu(void *vargp){
     char option;
     do{
-        option = 0;
         printf(White);
         option = getchar();
         switch(option){

@@ -7,7 +7,6 @@ void * update_temperatures(void * vargp){
     I2C();
     GPIO();
     while(1){
-        menu();
         int uart = UART();
         potentiometer = get_potentiometer_temperature_uart(uart);
         internal = get_internal_temperature_uart(uart);
@@ -31,6 +30,7 @@ void * update_temperatures(void * vargp){
         write_second(second);
         float temperatures[6] = {internal, external, potentiometer, terminal, reference, atuador};
         insert_line(temperatures, 6);
+        menu();
         sleep(1);
     }
 }
