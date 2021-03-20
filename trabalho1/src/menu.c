@@ -7,8 +7,9 @@ void clear_terminal(){
 }
 void temperature_menu(){
     while(!get_potentiometer_temperature() || !get_internal_temperature() || !get_external_temperature()){
-        delay(500);
+        usleep(500);
     }
+    printf("OK!\n");
     float temperatura_potenciometro = get_potentiometer_temperature();
     float temperatura_interna = get_internal_temperature();
     float temperatura_externa= get_external_temperature();

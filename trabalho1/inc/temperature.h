@@ -1,6 +1,7 @@
 #ifndef TEMPERATURE_H_
 #define TEMPERATURE_H_
 
+#include <unistd.h>
 #include "uart.h"
 #include "i2c.h"
 #include "display.h"
