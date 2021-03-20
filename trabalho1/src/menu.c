@@ -134,12 +134,14 @@ void * read_menu(void *vargp){
         switch(option){
             case '1':
                 set_terminal_temperature(-1.0);
+                potentiometer_as_reference = 1;
                 set_reference_temperature(get_potentiometer_temperature());
                 break;
             case '2':
                 show_read = 0;
                 set_terminal_temperature(read_terminal());
                 show_read = 1;
+                potentiometer_as_reference = 0;
                 set_reference_temperature(get_terminal_temperature());
                 break;
         }

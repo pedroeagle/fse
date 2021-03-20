@@ -1,5 +1,6 @@
 #include "temperature.h"
 float potentiometer = 0.0, internal = 0.0, external = 0.0, terminal = -1.0, reference = 0.0, atuador = 0.0;
+int potentiometer_as_reference = 1;
 void * update_temperatures(void * vargp){
     CSV();
     pid_configura_constantes(5, 1, 5);
@@ -19,7 +20,7 @@ void * update_temperatures(void * vargp){
             turn_on_fan(controle);
         }
         external = get_external_temperature_i2c();
-        if(get_reference_temperature()==0){
+        if(get_reference_temperature()==0 || potentiometer_as_reference){
             set_reference_temperature(potentiometer);
         }
         reference = get_reference_temperature();
@@ -35,7 +36,7 @@ void * update_temperatures(void * vargp){
         }   
         s++;
         menu();
-        sleep(1);
+        usleep(700000);
     }
 }
 float get_potentiometer_temperature(){

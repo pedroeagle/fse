@@ -49,7 +49,7 @@ float read_uart(int uart, unsigned char * code, int size){
         }
     }
 
-    sleep(1);
+    usleep(100000);
 
     //----- CHECK FOR ANY RX BYTES -----
     if (uart != -1)

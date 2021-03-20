@@ -16,4 +16,5 @@ float get_internal_temperature();
 float get_external_temperature();
 float get_terminal_temperature();
 void set_terminal_temperature(float temperature);
+int potentiometer_as_reference;
 #endif
