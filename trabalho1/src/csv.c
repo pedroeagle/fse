@@ -17,7 +17,7 @@ void CSV(){
 
     fp=fopen(filename,"w+");
     
-    fprintf(fp,"Temperatura Interna, Temperatura Externa, Temperatura do Potenciômetro, Temperatura do Terminal, Temperatura de Referência");
+    fprintf(fp,"Temperatura Interna, Temperatura Externa, Temperatura do Potenciômetro, Temperatura do Terminal, Temperatura de Referência, Atuador (%%)");
     fclose(fp);
  
 }

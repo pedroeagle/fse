@@ -1,5 +1,5 @@
 #include "temperature.h"
-float potentiometer = 0.0, internal = 0.0, external = 0.0, terminal = 0.0, reference = 0.0;
+float potentiometer = 0.0, internal = 0.0, external = 0.0, terminal = 0.0, reference = 0.0, atuador = 0.0;
 void * update_temperatures(void * vargp){
     CSV();
     pid_configura_constantes(5, 1, 5);
@@ -11,6 +11,7 @@ void * update_temperatures(void * vargp){
         potentiometer = get_potentiometer_temperature_uart(uart);
         internal = get_internal_temperature_uart(uart);
         double controle = pid_controle(internal);
+        atuador = controle;
         if(controle > 0){
             turn_on_resistor(controle);
         }else{
@@ -27,8 +28,8 @@ void * update_temperatures(void * vargp){
         sprintf(second, "TP:%.2fTR:%.2f", potentiometer, reference);
         write_first(first);
         write_second(second);
-        float temperatures[5] = {internal, external, potentiometer, terminal, reference};
-        insert_line(temperatures, 5);
+        float temperatures[6] = {internal, external, potentiometer, terminal, reference, atuador};
+        insert_line(temperatures, 6);
         sleep(1);
     }
 }
