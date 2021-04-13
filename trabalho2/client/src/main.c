@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "client.h"
 
 #define LAMPADA_1_OUT 0
 #define LAMPADA_2_OUT 1
@@ -16,9 +16,5 @@
 #define SENSOR_ABERTURA_6_IN 29
 
 int main(int argc, const char * argv[]) {
-    printf("%d\n", GPIO());
-    while(1){
-        read_gpio(SENSOR_PRESENCA_2_IN);
-        sleep(3);
-    };
+    start_client();
 }
