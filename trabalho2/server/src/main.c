@@ -1,5 +1,5 @@
 #include "gpio.h"
-#include "server.h"
+#include "socket.h"
 
 #define LAMPADA_1_OUT 0
 #define LAMPADA_2_OUT 1
@@ -17,5 +17,6 @@
 #define SENSOR_ABERTURA_6_IN 29
 
 int main(int argc, const char * argv[]) {
-    start_server();
+    //start_socket();
+    send_message("Testeeee");
 }

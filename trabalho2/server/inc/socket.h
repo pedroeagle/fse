@@ -12,6 +12,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-int start_server();
+int start_socket();
 
 #endif
