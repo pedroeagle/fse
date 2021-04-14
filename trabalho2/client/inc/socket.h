@@ -1,5 +1,6 @@
-#ifndef CLIENT_H_
-#define CLIENT_H_
+#ifndef SERVER_H_
+#define SERVER_H_
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -11,6 +12,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-int send_message(char * message);
+int start_socket();
 
 #endif
