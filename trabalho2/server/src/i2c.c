@@ -9,6 +9,7 @@ void * get_i2c_values(void * argp){
     I2C();
     while(1){
         bme280ReadValues(&T, &P, &H);
+        i2c_values_to_json_string(read_temperature(), read_humidity());
         sleep(1);
     }
 }

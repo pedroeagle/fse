@@ -15,4 +15,6 @@ typedef struct sensor {
     int port;
     int value;
 } sensor;
+struct sensor presence_sensors[2];
+struct sensor open_sensors[6];
 #endif

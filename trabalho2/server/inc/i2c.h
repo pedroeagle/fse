@@ -2,6 +2,7 @@
 #define I2C_H_
 
 #include "bme280.h"
+#include "json.h"
 void I2C();
 float read_temperature();
 float read_humidity();
