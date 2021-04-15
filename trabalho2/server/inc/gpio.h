@@ -10,6 +10,9 @@ void TURN_OFF_GPIO();
 void turn_on(int gpio_port);
 void turn_off(int gpio_port);
 int read_gpio(int gpio_port);
-void handle_sensor_presenca_1();
 void create_handlers();
+typedef struct sensor {
+    int port;
+    int value;
+} sensor;
 #endif

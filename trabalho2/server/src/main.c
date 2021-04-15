@@ -1,6 +1,7 @@
 #include "gpio.h"
 #include "socket.h"
 #include "gpio.h"
+#include "i2c.h"
 
 #define LAMPADA_1_OUT 0
 #define LAMPADA_2_OUT 1
@@ -19,5 +20,6 @@
 
 pthread_t TESTE_PTHREAD_ID, HANDLE_SENSORS_PTHREAD_ID;
 int main(int argc, const char * argv[]) {
-    GPIO();
+    I2C();
+    printf("temperatura: %lf, umidade: %lf\n", read_temperature(), read_humidity());
 }

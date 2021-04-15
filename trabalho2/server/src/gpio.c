@@ -16,11 +16,6 @@
 
 int HANDLER_PTHREAD_ID;
 
-typedef struct sensor {
-    int port;
-    int value;
-    void * handler_function;
-} sensor;
 struct sensor sensores[8];
 void GPIO(){
     wiringPiSetup ();
@@ -87,7 +82,6 @@ void create_handlers () {
     for(int i = 0; i < length; i++){
         sensores[i].port = ports[i];
         sensores[i].value = read_gpio(ports[i]);
-        sensores[i].handler_function = functions[i];
         wiringPiISR(ports[i], INT_EDGE_BOTH, functions[i]);
     }
     while(1){
