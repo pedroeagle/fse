@@ -42,44 +42,86 @@ void TURN_OFF_GPIO(){
         softPwmWrite (ports[i], 0);
     }
 }
-void handle_sensor_0() {
+void handle_gpio_component_0() {
     presence_sensors[0].value = read_gpio(presence_sensors[0].port);
     printf("porta: %d valor: %d\n", presence_sensors[0].port, presence_sensors[0].value);
+    get_json();
 }
-void handle_sensor_1() {
+void handle_gpio_component_1() {
     presence_sensors[1].value = read_gpio(presence_sensors[1].port);
     printf("porta: %d valor: %d\n", presence_sensors[1].port, presence_sensors[1].value);
+    get_json();
 }
-void handle_sensor_2() {
+void handle_gpio_component_2() {
     open_sensors[0].value = read_gpio(open_sensors[0].port);
     printf("porta: %d valor: %d\n", open_sensors[0].port, open_sensors[0].value);
+    get_json();
 }
-void handle_sensor_3() {
+void handle_gpio_component_3() {
     open_sensors[1].value = read_gpio(open_sensors[1].port);
     printf("porta: %d valor: %d\n", open_sensors[1].port, open_sensors[1].value);
+    get_json();
 }
-void handle_sensor_4() {
+void handle_gpio_component_4() {
     open_sensors[2].value = read_gpio(open_sensors[2].port);
     printf("porta: %d valor: %d\n", open_sensors[2].port, open_sensors[2].value);
+    get_json();
 }
-void handle_sensor_5() {
+void handle_gpio_component_5() {
     open_sensors[3].value = read_gpio(open_sensors[3].port);
     printf("porta: %d valor: %d\n", open_sensors[3].port, open_sensors[3].value);
+    get_json();
 }
-void handle_sensor_6() {
+void handle_gpio_component_6() {
     open_sensors[4].value = read_gpio(open_sensors[4].port);
     printf("porta: %d valor: %d\n", open_sensors[4].port, open_sensors[4].value);
+    get_json();
 }
-void handle_sensor_7() {
+void handle_gpio_component_7() {
     open_sensors[5].value = read_gpio(open_sensors[5].port);
     printf("porta: %d valor: %d\n", open_sensors[5].port, open_sensors[5].value);
+    get_json();
+}
+void handle_gpio_component_8() {
+    light_outs[0].value = read_gpio(light_outs[0].port);
+    printf("porta: %d valor: %d\n", light_outs[0].port, light_outs[0].value);
+    get_json();
+}
+void handle_gpio_component_9() {
+    light_outs[1].value = read_gpio(light_outs[1].port);
+    printf("porta: %d valor: %d\n", light_outs[1].port, light_outs[1].value);
+    get_json();
+}
+void handle_gpio_component_10() {
+    light_outs[2].value = read_gpio(light_outs[2].port);
+    printf("porta: %d valor: %d\n", light_outs[2].port, light_outs[2].value);
+    get_json();
+}
+void handle_gpio_component_11() {
+    light_outs[3].value = read_gpio(light_outs[3].port);
+    printf("porta: %d valor: %d\n", light_outs[3].port, light_outs[3].value);
+    get_json();
+}
+void handle_gpio_component_12() {
+    air_outs[0].value = read_gpio(air_outs[0].port);
+    printf("porta: %d valor: %d\n", air_outs[0].port, air_outs[0].value);
+    get_json();
+}
+void handle_gpio_component_13() {
+    air_outs[1].value = read_gpio(air_outs[1].port);
+    printf("porta: %d valor: %d\n", air_outs[1].port, air_outs[1].value);
+    get_json();
 }
 void create_handlers () {
     int presence_ports[] = {SENSOR_PRESENCA_1_IN, SENSOR_PRESENCA_2_IN};
     int open_ports[] = {SENSOR_ABERTURA_1_IN, SENSOR_ABERTURA_2_IN, SENSOR_ABERTURA_3_IN, SENSOR_ABERTURA_4_IN, SENSOR_ABERTURA_5_IN, SENSOR_ABERTURA_6_IN};
-    int functions[] = {handle_sensor_0, handle_sensor_1, handle_sensor_2, handle_sensor_3, handle_sensor_4, handle_sensor_5, handle_sensor_6, handle_sensor_7};
+    int light_ports[] = {LAMPADA_1_OUT, LAMPADA_2_OUT, LAMPADA_3_OUT, LAMPADA_4_OUT};
+    int air_ports[] = {AR_COND_1_OUT, AR_COND_2_OUT};
+    int functions[] = {handle_gpio_component_0, handle_gpio_component_1, handle_gpio_component_2, handle_gpio_component_3, handle_gpio_component_4, handle_gpio_component_5, handle_gpio_component_6, handle_gpio_component_7, handle_gpio_component_8, handle_gpio_component_9, handle_gpio_component_10, handle_gpio_component_11, handle_gpio_component_12, handle_gpio_component_13};
     int length_presence = sizeof(presence_ports)/sizeof(presence_ports[0]);
     int length_open = sizeof(open_ports)/sizeof(open_ports[0]);
+    int length_light = sizeof(light_ports)/sizeof(light_ports[0]);
+    int length_air = sizeof(air_ports)/sizeof(air_ports[0]);
     for(int i = 0; i < length_presence; i++){
         presence_sensors[i].port = presence_ports[i];
         presence_sensors[i].value = read_gpio(presence_ports[i]);
@@ -88,9 +130,32 @@ void create_handlers () {
     for(int i = 0; i <length_open; i++){
         open_sensors[i].port = open_ports[i];
         open_sensors[i].value = read_gpio(open_ports[i]);
-        wiringPiISR(open_ports[i], INT_EDGE_BOTH, functions[i+2]);
+        wiringPiISR(open_ports[i], INT_EDGE_BOTH, functions[i+length_presence]);
+    }
+    for(int i = 0; i <length_light; i++){
+        light_outs[i].port = light_ports[i];
+        light_outs[i].value = read_gpio(light_ports[i]);
+        wiringPiISR(light_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open]);
+    }
+    for(int i = 0; i <length_air; i++){
+        air_outs[i].port = air_ports[i];
+        air_outs[i].value = read_gpio(air_ports[i]);
+        wiringPiISR(air_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open+length_light]);
     }
     while(1){
         sleep(1);
     } 
+}
+int get_presence_sensors_lenght(){
+    int length = sizeof(presence_sensors)/sizeof(presence_sensors[0]);
+    return length;
+}
+int get_open_sensors_lenght(){
+    int length = sizeof(open_sensors)/sizeof(open_sensors[0]);
+}
+int get_light_outs_lenght(){
+    int length = sizeof(light_outs)/sizeof(light_outs[0]);
+}
+int get_air_outs_lenght(){
+    int length = sizeof(air_outs)/sizeof(air_outs[0]);
 }
