@@ -11,7 +11,9 @@
 #include <string.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include "json.h"
+#include "gpio.h"
 
-int start_socket();
+void * start_socket(void *vargp);
 
 #endif

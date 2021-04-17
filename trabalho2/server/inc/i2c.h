@@ -3,9 +3,10 @@
 
 #include "bme280.h"
 #include "json.h"
-void I2C();
+#include "client.h"
+void * I2C(void *vargp);
 float read_temperature();
 float read_humidity();
-void * get_i2c_values(void * argp);
+void get_i2c_values();
 int T, P, H;
 #endif

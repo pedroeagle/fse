@@ -41,6 +41,13 @@ char * get_json(){
     cJSON_AddItemToObject(root, "sensors", sensors);
     cJSON_AddItemToObject(root, "outs", outs);
     out = cJSON_Print(root);
-    printf("%s\n", out);
     return out;
+}
+
+int parse_toggle_json(char * json){
+    cJSON *root, *toggle;
+    root = cJSON_Parse(json);
+    toggle = cJSON_GetObjectItem(root, "toggle");
+    int port = atoi(cJSON_Print(toggle));
+    return port;
 }

@@ -17,21 +17,27 @@
 #define SENSOR_ABERTURA_6_IN 29
 
 int HANDLER_PTHREAD_ID;
-void GPIO(){
+void * GPIO(void *vargp){
+    printf("GPIO\n");
     wiringPiSetup ();
     int ports[] = {LAMPADA_1_OUT, LAMPADA_2_OUT, LAMPADA_3_OUT, LAMPADA_4_OUT, AR_COND_1_OUT, AR_COND_2_OUT};
     int length = sizeof(ports)/sizeof(ports[0]);
     for(int i = 0; i < length; i++){
-        pinMode(ports[i], OUTPUT);
         digitalWrite(ports[i], LOW);
     }
     create_handlers();
 }
 void turn_on(int gpio_port){
+    pinMode(gpio_port, OUTPUT);
     digitalWrite(gpio_port, HIGH); 
 }
 void turn_off(int gpio_port){
+    pinMode(gpio_port, OUTPUT);
     digitalWrite(gpio_port, LOW);
+}
+void toggle(int gpio_port){
+    int read = read_gpio(gpio_port);
+    read?turn_off(gpio_port):turn_on(gpio_port);
 }
 int read_gpio(int gpio_port){
     int value = digitalRead(gpio_port);

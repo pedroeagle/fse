@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <pthread.h>
 
-void GPIO();
+void * GPIO(void *vargp);
 void TURN_OFF_GPIO();
 void turn_on(int gpio_port);
 void turn_off(int gpio_port);

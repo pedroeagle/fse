@@ -1,15 +1,15 @@
 #include "i2c.h"
 #define I2C_ADDR 0x76
 
-
-void I2C(){
+void * I2C(void *vargp){
+    printf("I2C\n");
     bme280Init(1, I2C_ADDR);
+    get_i2c_values();
 }
-void * get_i2c_values(void * argp){
-    I2C();
+void get_i2c_values(){
     while(1){
         bme280ReadValues(&T, &P, &H);
-        i2c_values_to_json_string(read_temperature(), read_humidity());
+        send_message(get_json());
         sleep(1);
     }
 }
