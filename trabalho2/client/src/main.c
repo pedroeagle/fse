@@ -1,7 +1,7 @@
-#include "client.h"
+#include <pthread.h>
+#include <signal.h>
 #include "socket.h"
-#include "json.h"
-#include "alarm.h"
+#include "menu.h"
 
 #define LAMPADA_1_OUT 0
 #define LAMPADA_2_OUT 1
@@ -18,6 +18,15 @@
 #define SENSOR_ABERTURA_5_IN 28
 #define SENSOR_ABERTURA_6_IN 29
 
+pthread_t SOCKET_PTHREAD_ID, READ_PTHREAD_ID;
+
+void start(){
+    //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
+    pthread_create(&SOCKET_PTHREAD_ID, NULL, start_socket, NULL);
+    pthread_create(&READ_PTHREAD_ID, NULL, read_menu, NULL);
+    pthread_join(SOCKET_PTHREAD_ID, NULL);
+    pthread_join(READ_PTHREAD_ID, NULL);
+}
 int main(int argc, const char * argv[]) {
-    play_alarm();
+    start();
 }

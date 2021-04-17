@@ -1,7 +1,7 @@
 #include "socket.h"
 #define CLIENT_PORT 10025
 #define MAX 512
-int start_socket() {
+void * start_socket(void *vargp) {
 	int listenfd = 0,connfd = 0, n = 0;
 
 	struct sockaddr_in serv_addr;
@@ -26,27 +26,15 @@ int start_socket() {
 		return -1;
 	}     
 
-	while(1)
-		{      
+	while(1){      
 		connfd = accept(listenfd, (struct sockaddr*)NULL ,NULL); // accept awaiting request
-		while((n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0)
-		{
-		recvBuff[n] = 0;
-		//if(fputs(recvBuff, stdout) == EOF)
-		/*if(printf("%s\n", recvBuff) == EOF)
-		{
-		printf("\n Error : Fputs error");
-		}
-		printf("\n");*/
+		while((n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0){
+			recvBuff[n] = 0;
 		}
 		match_json_with_devices(recvBuff);
-		//printf(recvBuff);
-	if( n < 0)
-		{
+	if( n < 0){
 		printf("\n Read Error \n");
-		}   
+	}   
 		sleep(1);
-		} 
-
-	return 0;
+	} 
 }

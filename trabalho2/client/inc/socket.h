@@ -12,6 +12,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-int start_socket();
+void * start_socket(void *vargp);
 
 #endif
