@@ -1,5 +1,6 @@
 #include "client.h"
 #include "socket.h"
+#include "json.h"
 
 #define LAMPADA_1_OUT 0
 #define LAMPADA_2_OUT 1
@@ -17,6 +18,5 @@
 #define SENSOR_ABERTURA_6_IN 29
 
 int main(int argc, const char * argv[]) {
-    start_socket();
-    //send_message("Testeeee");
+    send_message(get_toggle_device_json(1));
 }
