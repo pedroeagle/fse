@@ -1,4 +1,5 @@
 #include "socket.h"
+#include "menu.h"
 #define CLIENT_PORT 10025
 #define MAX 512
 void * start_socket(void *vargp) {
@@ -32,6 +33,7 @@ void * start_socket(void *vargp) {
 			recvBuff[n] = 0;
 		}
 		match_json_with_devices(recvBuff);
+		menu();
 	if( n < 0){
 		printf("\n Read Error \n");
 	}   
