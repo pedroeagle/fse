@@ -32,13 +32,15 @@ int start_socket() {
 		while((n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0)
 		{
 		recvBuff[n] = 0;
-		if(fputs(recvBuff, stdout) == EOF)
+		//if(fputs(recvBuff, stdout) == EOF)
+		/*if(printf("%s\n", recvBuff) == EOF)
 		{
 		printf("\n Error : Fputs error");
 		}
-		printf("\n");
+		printf("\n");*/
 		}
-	
+		match_json_with_devices(recvBuff);
+		//printf(recvBuff);
 	if( n < 0)
 		{
 		printf("\n Read Error \n");

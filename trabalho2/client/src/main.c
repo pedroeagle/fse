@@ -18,5 +18,5 @@
 #define SENSOR_ABERTURA_6_IN 29
 
 int main(int argc, const char * argv[]) {
-    send_message(get_toggle_device_json(1));
+    start_socket();
 }
