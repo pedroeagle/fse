@@ -17,7 +17,7 @@ void CSV(){
 
     fp=fopen(filename,"w+");
     
-    fprintf(fp,"comando, porta, horario");
+    fprintf(fp,"comando, porta, horario\n");
     fclose(fp);
  
 }
@@ -29,7 +29,7 @@ void insert_line(char * comando, int porta){
     time_t now;
     time(&now);
     sprintf(time_string, "%s", ctime(&now));
-    sprintf(line, "\n%s, %d, %s", comando, porta, time_string);
+    sprintf(line, "%s, %d, %s", comando, porta, time_string);
     fprintf(fp, line);
     fclose(fp);
 }
