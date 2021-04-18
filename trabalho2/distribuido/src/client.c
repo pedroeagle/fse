@@ -5,7 +5,7 @@
 
 int send_message(char * message) {
   int sockfd = 0,n = 0;
-  char sendBuff[1024];
+  char sendBuff[5000];
   struct sockaddr_in serv_addr;
  
   memset(sendBuff, '0' ,sizeof(sendBuff));

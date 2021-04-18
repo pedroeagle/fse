@@ -122,7 +122,6 @@ void handle_gpio_component_13() {
     printf("porta: %d valor: %d\n", air_outs[1].port, air_outs[1].value);
     send_message(get_json());
 }
-int first_run = 1;
 void create_handlers () {
     int presence_ports[] = {SENSOR_PRESENCA_1_IN, SENSOR_PRESENCA_2_IN};
     int open_ports[] = {SENSOR_ABERTURA_1_IN, SENSOR_ABERTURA_2_IN, SENSOR_ABERTURA_3_IN, SENSOR_ABERTURA_4_IN, SENSOR_ABERTURA_5_IN, SENSOR_ABERTURA_6_IN};
@@ -134,41 +133,28 @@ void create_handlers () {
     int length_light = sizeof(light_ports)/sizeof(light_ports[0]);
     int length_air = sizeof(air_ports)/sizeof(air_ports[0]);
     for(int i = 0; i < length_presence; i++){
-        if(first_run){
-            presence_sensors[i].port = presence_ports[i];
-        }
-        if(first_run){
-            strcpy(presence_sensors[i].name, "PRESENCA");
-        }
+        presence_sensors[i].port = presence_ports[i];
+        strcpy(presence_sensors[i].name, "PRESENCA");
         wiringPiISR(presence_ports[i], INT_EDGE_BOTH, functions[i]);
     }
     for(int i = 0; i <length_open; i++){
-        if(first_run){
-            open_sensors[i].port = open_ports[i];
-        }
+        open_sensors[i].port = open_ports[i];
         wiringPiISR(open_ports[i], INT_EDGE_BOTH, functions[i+length_presence]);
     }
-    if(first_run){
-        strcpy(open_sensors[0].name, "PORTA COZINHA     ");
-        strcpy(open_sensors[1].name, "JANELA COZINHA    ");
-        strcpy(open_sensors[2].name, "PORTA SALA        ");
-        strcpy(open_sensors[3].name, "JANELA SALA       ");
-        strcpy(open_sensors[4].name, "JANELA QUARTO 1   ");
-        strcpy(open_sensors[5].name, "JANELA QUARTO 2   ");
-    }
+    strcpy(open_sensors[0].name, "PORTA COZINHA     ");
+    strcpy(open_sensors[1].name, "JANELA COZINHA    ");
+    strcpy(open_sensors[2].name, "PORTA SALA        ");
+    strcpy(open_sensors[3].name, "JANELA SALA       ");
+    strcpy(open_sensors[4].name, "JANELA QUARTO 1   ");
+    strcpy(open_sensors[5].name, "JANELA QUARTO 2   ");
     for(int i = 0; i <length_light; i++){
-        if(first_run){
-            light_outs[i].port = light_ports[i];
-        }
+        light_outs[i].port = light_ports[i];
         wiringPiISR(light_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open]);
     }
     for(int i = 0; i <length_air; i++){
-        if(first_run){
-            air_outs[i].port = air_ports[i];
-        }
+        air_outs[i].port = air_ports[i];
         wiringPiISR(air_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open+length_light]);
     }
-    first_run = 0;
     while(1){
         sleep(1);
     } 
