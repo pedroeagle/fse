@@ -143,6 +143,12 @@ void create_handlers () {
         open_sensors[i].value = read_gpio(open_ports[i]);
         wiringPiISR(open_ports[i], INT_EDGE_BOTH, functions[i+length_presence]);
     }
+    strcpy(open_sensors[0].name, "PORTA COZINHA ");
+    strcpy(open_sensors[1].name, "JANELA COZINHA");
+    strcpy(open_sensors[2].name, "PORTA SALA    ");
+    strcpy(open_sensors[3].name, "JANELA SALA   ");
+    strcpy(open_sensors[4].name, "JANELA QUARTO1");
+    strcpy(open_sensors[5].name, "JANELA QUARTO2");
     for(int i = 0; i <length_light; i++){
         light_outs[i].port = light_ports[i];
         light_outs[i].value = read_gpio(light_ports[i]);
