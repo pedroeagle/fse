@@ -55,10 +55,10 @@ void parse_json(char * json){
     setALARMStatus(atoi(cJSON_Print(alarm)));
     int turn_on_port = atoi(cJSON_Print(turn_on_json));
     int turn_off_port = atoi(cJSON_Print(turn_off_json));
-    if(turn_on>=0){
+    if(turn_on_port>=0){
         turn_on(turn_on_port);
     }
-    if(turn_off>=0){
+    if(turn_off_port>=0){
         turn_off(turn_off_port);
     }
 }
