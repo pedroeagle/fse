@@ -34,8 +34,7 @@ void * start_socket(void *vargp) {
 			/*if(fputs(recvBuff, stdout) == EOF){
 				printf("\n Error : Fputs error");
 			}*/
-			toggle(parse_toggle_json(recvBuff));
-			
+			parse_json(recvBuff);
 			printf("\n");
 		}
 	

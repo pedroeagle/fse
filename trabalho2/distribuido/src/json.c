@@ -45,10 +45,16 @@ char * get_json(){
     return out;
 }
 
-int parse_toggle_json(char * json){
-    cJSON *root, *toggle;
+void parse_json(char * json){
+    cJSON *root, *toggle, *alarm, *auto_mode;
     root = cJSON_Parse(json);
     toggle = cJSON_GetObjectItem(root, "toggle");
+    alarm = cJSON_GetObjectItem(root, "alarm");
+    auto_mode = cJSON_GetObjectItem(root, "auto_mode");
+    ALARM = atoi(cJSON_Print(alarm));
+    AUTO_MODE = atoi(cJSON_Print(auto_mode));
     int port = atoi(cJSON_Print(toggle));
-    return port;
+    if(port>=0){
+        toggle(port);
+    }
 }

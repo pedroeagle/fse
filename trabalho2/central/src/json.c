@@ -3,11 +3,13 @@
 #include "json.h"
 
 
-char * get_toggle_device_json(int port){
+char * get_json(int port){
     char * out;
     cJSON *root;
     root = cJSON_CreateObject();
     cJSON_AddItemToObject(root, "toggle", cJSON_CreateNumber(port));
+    cJSON_AddItemToObject(root, "alarm", cJSON_CreateNumber(ALARM));
+    cJSON_AddItemToObject(root, "auto_mode", cJSON_CreateNumber(AUTO_MODE));
     out = cJSON_Print(root);
     return out;
 }

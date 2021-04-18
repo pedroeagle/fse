@@ -5,5 +5,5 @@
 char * gpio_component_to_json_string(gpio_component * gpio_comps, int length);
 char * i2c_values_to_json_string();
 char * get_json();
-int parse_toggle_json(char * json);
+void parse_json(char * json);
 #endif
