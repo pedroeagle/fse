@@ -148,7 +148,7 @@ void create_handlers () {
     strcpy(open_sensors[2].name, "PORTA SALA        ");
     strcpy(open_sensors[3].name, "JANELA SALA       ");
     strcpy(open_sensors[4].name, "JANELA QUARTO 1   ");
-    strcpy(open_sensors[5].name, "JANELA QUARTO 2   ");
+    //strcpy(open_sensors[5].name, "JANELA QUARTO 2   ");
     for(int i = 0; i <length_light; i++){
         light_outs[i].port = light_ports[i];
         light_outs[i].value = read_gpio(light_ports[i]);
@@ -160,6 +160,7 @@ void create_handlers () {
         wiringPiISR(air_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open+length_light]);
     }
     while(1){
+        printf("aqui\n");
         sleep(1);
     } 
 }

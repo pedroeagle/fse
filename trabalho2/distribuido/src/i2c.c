@@ -14,7 +14,8 @@ void get_i2c_values(){
     }
 }
 void CLOSE_I2C(){
-    close("/dev/i2c-1");
+    int fd = open("/dev/i2c-1", O_RDWR);
+    close(fd);
 }
 float read_temperature(){
     return T/100.0;
