@@ -46,6 +46,7 @@ char * get_json(){
 }
 
 void parse_json(char * json){
+    printf("%s\n", json);
     cJSON *root, *toggle_json, *alarm, *auto_mode;
     root = cJSON_Parse(json);
     toggle_json = cJSON_GetObjectItem(root, "toggle");

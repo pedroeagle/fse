@@ -55,7 +55,7 @@ void toggle(int gpio_port){
 int read_gpio(int gpio_port){
     int value = digitalRead(gpio_port);
     send_message(get_json());
-    if(AUTO_MODE){
+    if(getAUTO_MODEStatus()){
         if(value){
             switch(gpio_port){
                 case SENSOR_PRESENCA_1_IN:
@@ -86,7 +86,7 @@ int read_gpio(int gpio_port){
             turn_on(AR_COND_2_OUT);
         }
     }
-    printf("porta: %d valor: %d\n", presence_sensors[0].port, presence_sensors[0].value);
+    printf("porta: %d valor: %d\n", gpio_port, value);
     return value;
 }
 void TURN_OFF_GPIO(){
