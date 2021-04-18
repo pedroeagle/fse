@@ -47,15 +47,18 @@ char * get_json(){
 
 void parse_json(char * json){
     printf("%s\n", json);
-    cJSON *root, *toggle_json, *alarm, *auto_mode;
+    cJSON *root, *turn_on_json, *turn_off_json, *alarm, *auto_mode;
     root = cJSON_Parse(json);
-    toggle_json = cJSON_GetObjectItem(root, "toggle");
+    turn_on_json = cJSON_GetObjectItem(root, "turn_on");
+    turn_off_json = cJSON_GetObjectItem(root, "turn_off");
     alarm = cJSON_GetObjectItem(root, "alarm");
-    auto_mode = cJSON_GetObjectItem(root, "auto_mode");
     setALARMStatus(atoi(cJSON_Print(alarm)));
-    setAUTO_MODEStatus(atoi(cJSON_Print(auto_mode)));
-    int port = atoi(cJSON_Print(toggle_json));
-    if(port>=0){
-        toggle(port);
+    int turn_on_port = atoi(cJSON_Print(turn_on_json));
+    int turn_off_port = atoi(cJSON_Print(turn_off_json));
+    if(turn_on>=0){
+        turn_on(turn_on_port);
+    }
+    if(turn_off>=0){
+        turn_off(turn_off_port);
     }
 }

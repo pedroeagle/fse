@@ -48,20 +48,18 @@ void turn_off(int gpio_port){
     pinMode(gpio_port, OUTPUT);
     digitalWrite(gpio_port, LOW);
 }
-void toggle(int gpio_port){
-    int read = read_gpio(gpio_port);
-    read?turn_off(gpio_port):turn_on(gpio_port);
-}
 int read_gpio(int gpio_port){
+    pinMode(gpio_port, INPUT);
     int value = digitalRead(gpio_port);
-    send_message(get_json());
-    if(getAUTO_MODEStatus()){
+    /*if(getAUTO_MODEStatus()){
         if(value){
             switch(gpio_port){
                 case SENSOR_PRESENCA_1_IN:
+                    printf("prsenca 1\n");
                     turn_on(LAMPADA_3_OUT);
                     break;
                 case SENSOR_PRESENCA_2_IN:
+                    printf("prsenca 2\n");
                     turn_on(LAMPADA_4_OUT);
                     break;
             }
@@ -85,7 +83,7 @@ int read_gpio(int gpio_port){
         }else if(!open_sensors[5].value){
             turn_on(AR_COND_2_OUT);
         }
-    }
+    }*/
     printf("porta: %d valor: %d\n", gpio_port, value);
     return value;
 }
@@ -100,45 +98,59 @@ void TURN_OFF_GPIO(){
 }
 void handle_gpio_component_0() {
     presence_sensors[0].value = read_gpio(presence_sensors[0].port);
+    send_message(get_json());
 }
 void handle_gpio_component_1() {
     presence_sensors[1].value = read_gpio(presence_sensors[1].port);
+    send_message(get_json());
 }
 void handle_gpio_component_2() {
     open_sensors[0].value = read_gpio(open_sensors[0].port);
+    send_message(get_json());
 }
 void handle_gpio_component_3() {
     open_sensors[1].value = read_gpio(open_sensors[1].port);
+    send_message(get_json());
 }
 void handle_gpio_component_4() {
     open_sensors[2].value = read_gpio(open_sensors[2].port);
+    send_message(get_json());
 }
 void handle_gpio_component_5() {
     open_sensors[3].value = read_gpio(open_sensors[3].port);
+    send_message(get_json());
 }
 void handle_gpio_component_6() {
     open_sensors[4].value = read_gpio(open_sensors[4].port);
+    send_message(get_json());
 }
 void handle_gpio_component_7() {
     open_sensors[5].value = read_gpio(open_sensors[5].port);
+    send_message(get_json());
 }
 void handle_gpio_component_8() {
     light_outs[0].value = read_gpio(light_outs[0].port);
+    send_message(get_json());
 }
 void handle_gpio_component_9() {
     light_outs[1].value = read_gpio(light_outs[1].port);
+    send_message(get_json());
 }
 void handle_gpio_component_10() {
     light_outs[2].value = read_gpio(light_outs[2].port);
+    send_message(get_json());
 }
 void handle_gpio_component_11() {
     light_outs[3].value = read_gpio(light_outs[3].port);
+    send_message(get_json());
 }
 void handle_gpio_component_12() {
     air_outs[0].value = read_gpio(air_outs[0].port);
+    send_message(get_json());
 }
 void handle_gpio_component_13() {
     air_outs[1].value = read_gpio(air_outs[1].port);
+    send_message(get_json());
 }
 void create_handlers () {
     int presence_ports[] = {SENSOR_PRESENCA_1_IN, SENSOR_PRESENCA_2_IN};
@@ -152,11 +164,13 @@ void create_handlers () {
     int length_air = sizeof(air_ports)/sizeof(air_ports[0]);
     for(int i = 0; i < length_presence; i++){
         presence_sensors[i].port = presence_ports[i];
+        presence_sensors[i].value = read_gpio(presence_sensors[i].port);
         strcpy(presence_sensors[i].name, "PRESENCA");
         wiringPiISR(presence_ports[i], INT_EDGE_BOTH, functions[i]);
     }
     for(int i = 0; i <length_open; i++){
         open_sensors[i].port = open_ports[i];
+        open_sensors[i].value = read_gpio(open_sensors[i].port);
         wiringPiISR(open_ports[i], INT_EDGE_BOTH, functions[i+length_presence]);
     }
     strcpy(open_sensors[0].name, "PORTA COZINHA     ");
@@ -167,15 +181,17 @@ void create_handlers () {
     strcpy(open_sensors[5].name, "JANELA QUARTO 2   ");
     for(int i = 0; i <length_light; i++){
         light_outs[i].port = light_ports[i];
+        turn_off(light_ports[i]);
+        light_outs[i].value = 0;
         wiringPiISR(light_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open]);
     }
     for(int i = 0; i <length_air; i++){
         air_outs[i].port = air_ports[i];
+        turn_off(air_ports[i]);
+        air_outs[i].value = 0;
         wiringPiISR(air_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open+length_light]);
     }
-    while(1){
-        sleep(1);
-    } 
+    send_message(get_json());
 }
 int get_presence_sensors_lenght(){
     int length = sizeof(presence_sensors)/sizeof(presence_sensors[0]);
