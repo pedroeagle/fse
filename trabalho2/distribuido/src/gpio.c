@@ -41,11 +41,11 @@ void * GPIO(void *vargp){
     create_handlers();
 }
 void turn_on(int gpio_port){
-    pinMode(gpio_port, OUTPUT);
+    //pinMode(gpio_port, OUTPUT);
     digitalWrite(gpio_port, HIGH); 
 }
 void turn_off(int gpio_port){
-    pinMode(gpio_port, OUTPUT);
+    //pinMode(gpio_port, OUTPUT);
     digitalWrite(gpio_port, LOW);
 }
 void toggle(int gpio_port){
@@ -59,9 +59,11 @@ int read_gpio(int gpio_port){
         if(value){
             switch(gpio_port){
                 case SENSOR_PRESENCA_1_IN:
+                    printf("prsenca 1\n");
                     turn_on(LAMPADA_3_OUT);
                     break;
                 case SENSOR_PRESENCA_2_IN:
+                    printf("prsenca 2\n");
                     turn_on(LAMPADA_4_OUT);
                     break;
             }
