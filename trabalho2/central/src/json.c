@@ -26,14 +26,14 @@ void match_json_with_devices(char * json){
         cJSON *item = cJSON_GetArrayItem(presence, i);
         presence_sensors[i].port = atoi(cJSON_Print(cJSON_GetObjectItem(item, "port")));
         presence_sensors[i].value = atoi(cJSON_Print(cJSON_GetObjectItem(item, "value")));
-        presence_sensors[i].name = cJSON_Print(cJSON_GetObjectItem(item, "name"));
+        strcpy(presence_sensors[i].name, cJSON_Print(cJSON_GetObjectItem(item, "name")));
     }
     open = cJSON_GetObjectItem(sensors, "open");
     for(int i = 0; i < get_open_sensors_lenght(); i++){
         cJSON *item = cJSON_GetArrayItem(open, i);
         open_sensors[i].port = atoi(cJSON_Print(cJSON_GetObjectItem(item, "port")));
         open_sensors[i].value = atoi(cJSON_Print(cJSON_GetObjectItem(item, "value")));
-        open_sensors[i].name = cJSON_Print(cJSON_GetObjectItem(item, "value"));
+        strcpy(open_sensors[i].name, cJSON_Print(cJSON_GetObjectItem(item, "value")));
     }
 
     outs = cJSON_GetObjectItem(root, "outs");
