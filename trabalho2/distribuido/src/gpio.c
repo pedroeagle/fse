@@ -75,14 +75,14 @@ int read_gpio(int gpio_port){
                     break;
             }
         }
-        if(open_sensors[2].value){
+        if(open_sensors[4].value){
             turn_off(AR_COND_1_OUT); 
-        }else if(!open_sensors[2].value){
+        }else if(!open_sensors[4].value){
             turn_on(AR_COND_1_OUT);
         }
-        if(open_sensors[3].value){
+        if(open_sensors[5].value){
             turn_off(AR_COND_2_OUT);
-        }else if(!open_sensors[3].value){
+        }else if(!open_sensors[5].value){
             turn_on(AR_COND_2_OUT);
         }
     }
