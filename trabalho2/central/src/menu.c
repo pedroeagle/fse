@@ -105,6 +105,27 @@ void status_menu(){
     }
     printf(Blue);
     printf("|\n");
+    printf("|");
+    printf(White_Bold);
+    printf(" CONTROLE GERAL                                                   ");
+    printf(Blue);
+    printf("|\n");
+    if(ALARM){
+        printf(Green);
+        printf("ALARME: ATIVADO   ");
+    }else{
+        printf(Red);
+        printf("ALARME: DESATIVADO");
+    }
+    if(AUTO_MODE){
+        printf(Green);
+        printf("AUTO MODE: ATIVADO   ");
+    }else{
+        printf(Red);
+        printf("AUTO MODE: DESATIVADO");
+    }
+    printf(Blue);
+    printf("|\n");
     /*printf("|");
     printf(Green);
     printf("%s", "teste");
@@ -140,7 +161,30 @@ void menu(){
         printf("|\n");
         printf("|");
         printf(Yellow);
-        printf("       3 - ATIVAR ALARME                                           ");
+        printf("       3 - LIGAR AR CONDICIONADO                                   ");
+        printf(Blue);
+        printf("|\n");
+        printf("|");
+        printf(Yellow);
+        printf("       4 - DESLIGAR AR CONDICIONADO                                ");
+        printf(Blue);
+        printf("|\n");
+        printf("|");
+        printf(Yellow);
+        if(ALARM){
+            printf("       5 - DESATIVAR ALARME                                         ");
+        }else{
+            printf("       5 - ATIVAR ALARME                                            ");
+        }
+        printf(Blue);
+        printf("|\n");
+        printf("|");
+        printf(Yellow);
+        if(AUTO_MODE){
+            printf("       6 - DESATIVAR AUTO MODE                                     ");
+        }else{
+            printf("       6 - ATIVAR AUTO MODE                                        ");
+        }
         printf(Blue);
         printf("|\n");
         printf("|");
