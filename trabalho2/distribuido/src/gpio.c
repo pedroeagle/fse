@@ -56,7 +56,35 @@ int read_gpio(int gpio_port){
     int value = digitalRead(gpio_port);
     send_message(get_json());
     if(AUTO_MODE){
-        value? turn_on(gpio_port):turn_off(gpio_port);
+        if(value){
+            switch(gpio_port){
+                case SENSOR_PRESENCA_1_IN:
+                    turn_on(LAMPADA_3_OUT);
+                    break;
+                case SENSOR_PRESENCA_2_IN:
+                    turn_on(LAMPADA_4_OUT);
+                    break;
+            }
+        }else{
+            switch(gpio_port){
+                case SENSOR_PRESENCA_1_IN:
+                    turn_off(LAMPADA_3_OUT);
+                    break;
+                case SENSOR_PRESENCA_2_IN:
+                    turn_off(LAMPADA_4_OUT);
+                    break;
+            }
+        }
+        if(open_sensors[2].value){
+            turn_off(AR_COND_1_OUT); 
+        }else if(!open_sensors[2].value){
+            turn_on(AR_COND_1_OUT);
+        }
+        if(open_sensors[3].value){
+            turn_off(AR_COND_2_OUT);
+        }else if(!open_sensors[3].value){
+            turn_on(AR_COND_2_OUT);
+        }
     }
     printf("porta: %d valor: %d\n", presence_sensors[0].port, presence_sensors[0].value);
     return value;
