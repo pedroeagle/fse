@@ -110,6 +110,7 @@ void status_menu(){
     printf(" CONTROLE GERAL                                                   ");
     printf(Blue);
     printf("|\n");
+    printf("|   ");
     if(ALARM){
         printf(Green);
         printf("ALARME: ATIVADO   ");
@@ -117,6 +118,7 @@ void status_menu(){
         printf(Red);
         printf("ALARME: DESATIVADO");
     }
+    printf("            ");
     if(AUTO_MODE){
         printf(Green);
         printf("AUTO MODE: ATIVADO   ");
@@ -174,7 +176,7 @@ void menu(){
         if(ALARM){
             printf("       5 - DESATIVAR ALARME                                         ");
         }else{
-            printf("       5 - ATIVAR ALARME                                            ");
+            printf("       5 - ATIVAR ALARME                                           ");
         }
         printf(Blue);
         printf("|\n");
@@ -231,6 +233,38 @@ int read_lampada_to_turn_off(){
     }
     return light_outs[index-1].port;
 }
+int read_air_to_turn_on(){
+    int index;
+    while(1){
+        printf("Digite o número do ar-condicionado a qual deseja LIGAR. Digite 0 para voltar.\n");
+        scanf("%d", &index);
+        if(!index){
+            return -1;
+        }
+        if(air_outs[index-1].value){
+            printf("Este ar-condicionado já está ligado. Escolha outro.\n");
+        }else{
+            break;
+        }
+    }
+    return air_outs[index-1].port;
+}
+int read_air_to_turn_off(){
+    int index;
+    while(1){
+        printf("Digite o número do ar-condicionado o qual deseja DESLIGAR. Digite 0 para voltar.\n");
+        scanf("%d", &index);
+        if(!index){
+            return -1;
+        }
+        if(!air_outs[index-1].value){
+            printf("Esta ar-condicionado já está desligado. Escolha outro.\n");
+        }else{
+            break;
+        }
+    }
+    return air_outs[index-1].port;
+}
 void * read_menu(void *vargp){
     char option;
     int port;
@@ -252,6 +286,34 @@ void * read_menu(void *vargp){
                 if(port>=0){
                     send_message(get_toggle_device_json(port));
                 }
+                show_read = 1;
+                break;
+            case '3':
+                show_read = 0;
+                port = read_air_to_turn_on();
+                if(port>=0){
+                    send_message(get_toggle_device_json(port));
+                }
+                show_read = 1;
+                break;
+            case '4':
+                show_read = 0;
+                port = read_air_to_turn_off();
+                if(port>=0){
+                    send_message(get_toggle_device_json(port));
+                }
+                show_read = 1;
+                break;
+            case '5':
+                show_read = 0;
+                ALARM = !ALARM;
+                //send_message
+                show_read = 1;
+                break;
+            case '6':
+                show_read = 0;
+                AUTO_MODE = !AUTO_MODE;
+                //send_message
                 show_read = 1;
                 break;
         }
