@@ -83,6 +83,28 @@ void status_menu(){
     }
     printf(Blue);
     printf("|\n");
+    printf("|");
+    printf(White_Bold);
+    printf(" SENSORES DE ABERTURA                                               ");
+    printf(Blue);
+    printf("|\n");
+    printf("|   ");
+    for(int i = 0; i < get_open_sensors_lenght(); i++){
+        if(i == 3){
+            printf(Blue);
+            printf("|\n");
+            printf("|");
+        }
+        if(open_sensors[i].value){
+            printf(Green);
+            printf("%s %d: ON   ", presence_sensors[i].name, i+1);
+        }else{
+            printf(White);
+            printf("%s %d: OFF  ", presence_sensors[i].name, i+1);
+        }
+    }
+    printf(Blue);
+    printf("|\n");
     /*printf("|");
     printf(Green);
     printf("%s", "teste");
