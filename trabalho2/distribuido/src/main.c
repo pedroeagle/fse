@@ -5,7 +5,7 @@
 #include <signal.h>
 
 pthread_t HANDLE_GPIO_PTHREAD_ID, SOCKET_PTHREAD_ID, UPDATE_I2C_VALUES;
-int ALARM, AUTO_MODE;
+int ALARM = 0, AUTO_MODE = 0;
 void * continue_function(void * argp){
     while(1){
         printf("temperatura: %lf, umidade: %lf\n", read_temperature(), read_humidity());

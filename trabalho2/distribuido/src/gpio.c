@@ -41,6 +41,11 @@ void toggle(int gpio_port){
 }
 int read_gpio(int gpio_port){
     int value = digitalRead(gpio_port);
+    send_message(get_json());
+    if(AUTO_MODE){
+        value? turn_on(gpio_port):turn_off(gpio_port);
+    }
+    printf("porta: %d valor: %d\n", presence_sensors[0].port, presence_sensors[0].value);
     return value;
 }
 void TURN_OFF_GPIO(){
@@ -54,73 +59,45 @@ void TURN_OFF_GPIO(){
 }
 void handle_gpio_component_0() {
     presence_sensors[0].value = read_gpio(presence_sensors[0].port);
-    printf("porta: %d valor: %d\n", presence_sensors[0].port, presence_sensors[0].value);
-    send_message(get_json());
 }
 void handle_gpio_component_1() {
     presence_sensors[1].value = read_gpio(presence_sensors[1].port);
-    printf("porta: %d valor: %d\n", presence_sensors[1].port, presence_sensors[1].value);
-    send_message(get_json());
 }
 void handle_gpio_component_2() {
     open_sensors[0].value = read_gpio(open_sensors[0].port);
-    printf("porta: %d valor: %d\n", open_sensors[0].port, open_sensors[0].value);
-    send_message(get_json());
 }
 void handle_gpio_component_3() {
     open_sensors[1].value = read_gpio(open_sensors[1].port);
-    printf("porta: %d valor: %d\n", open_sensors[1].port, open_sensors[1].value);
-    send_message(get_json());
 }
 void handle_gpio_component_4() {
     open_sensors[2].value = read_gpio(open_sensors[2].port);
-    printf("porta: %d valor: %d\n", open_sensors[2].port, open_sensors[2].value);
-    send_message(get_json());
 }
 void handle_gpio_component_5() {
     open_sensors[3].value = read_gpio(open_sensors[3].port);
-    printf("porta: %d valor: %d\n", open_sensors[3].port, open_sensors[3].value);
-    send_message(get_json());
 }
 void handle_gpio_component_6() {
     open_sensors[4].value = read_gpio(open_sensors[4].port);
-    printf("porta: %d valor: %d\n", open_sensors[4].port, open_sensors[4].value);
-    send_message(get_json());
 }
 void handle_gpio_component_7() {
     open_sensors[5].value = read_gpio(open_sensors[5].port);
-    printf("porta: %d valor: %d\n", open_sensors[5].port, open_sensors[5].value);
-    send_message(get_json());
 }
 void handle_gpio_component_8() {
     light_outs[0].value = read_gpio(light_outs[0].port);
-    printf("porta: %d valor: %d\n", light_outs[0].port, light_outs[0].value);
-    send_message(get_json());
 }
 void handle_gpio_component_9() {
     light_outs[1].value = read_gpio(light_outs[1].port);
-    printf("porta: %d valor: %d\n", light_outs[1].port, light_outs[1].value);
-    send_message(get_json());
 }
 void handle_gpio_component_10() {
     light_outs[2].value = read_gpio(light_outs[2].port);
-    printf("porta: %d valor: %d\n", light_outs[2].port, light_outs[2].value);
-    send_message(get_json());
 }
 void handle_gpio_component_11() {
     light_outs[3].value = read_gpio(light_outs[3].port);
-    printf("porta: %d valor: %d\n", light_outs[3].port, light_outs[3].value);
-    send_message(get_json());
 }
 void handle_gpio_component_12() {
     air_outs[0].value = read_gpio(air_outs[0].port);
-    printf("porta: %d valor: %d\n", air_outs[0].port, air_outs[0].value);
-    send_message(get_json());
 }
 void handle_gpio_component_13() {
     air_outs[1].value = read_gpio(air_outs[1].port);
-    printf("porta: %d valor: %d\n", air_outs[1].port, air_outs[1].value);
-    send_message(get_json());
 }
 void create_handlers () {
     int presence_ports[] = {SENSOR_PRESENCA_1_IN, SENSOR_PRESENCA_2_IN};

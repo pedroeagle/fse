@@ -35,7 +35,6 @@ void * start_socket(void *vargp) {
 				printf("\n Error : Fputs error");
 			}*/
 			parse_json(recvBuff);
-			printf("\n");
 		}
 	
 		if( n < 0){
