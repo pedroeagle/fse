@@ -118,14 +118,7 @@ void status_menu(){
         printf(Red);
         printf("ALARME: DESATIVADO");
     }
-    printf("                   ");
-    if(AUTO_MODE){
-        printf(Green);
-        printf("AUTO MODE: ATIVADO     ");
-    }else{
-        printf(Red);
-        printf("AUTO MODE: DESATIVADO  ");
-    }
+    printf("                                          ");
     printf(Blue);
     printf("|\n");
     /*printf("|");
