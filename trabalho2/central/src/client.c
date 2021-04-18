@@ -1,11 +1,10 @@
 #include "client.h"
 #define SERVER_IP "192.168.0.52"
 #define SERVER_PORT 10125
-#define MAX 512
 
 int send_message(char * message) {
   int sockfd = 0,n = 0;
-  char sendBuff[1024];
+  char sendBuff[5000];
   struct sockaddr_in serv_addr;
  
   memset(sendBuff, '0' ,sizeof(sendBuff));

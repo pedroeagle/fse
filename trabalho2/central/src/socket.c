@@ -7,7 +7,7 @@ void * start_socket(void *vargp) {
 
 	struct sockaddr_in serv_addr;
 
-	char recvBuff[1025];  
+	char recvBuff[5000];  
 	int numrv;  
 
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
