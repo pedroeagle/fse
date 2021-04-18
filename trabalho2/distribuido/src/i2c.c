@@ -13,6 +13,9 @@ void get_i2c_values(){
         sleep(1);
     }
 }
+void CLOSE_I2C(){
+    close("/dev/i2c-1");
+}
 float read_temperature(){
     return T/100.0;
 }

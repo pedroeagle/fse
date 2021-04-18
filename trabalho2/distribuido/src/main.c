@@ -19,7 +19,17 @@ void start(){
     pthread_join(SOCKET_PTHREAD_ID, NULL);
     pthread_join(UPDATE_I2C_VALUES, NULL);
 }
-
+void finish(){
+    CLOSE_I2C();
+    pthread_cancel(HANDLE_GPIO_PTHREAD_ID;
+    pthread_cancel(SOCKET_PTHREAD_ID);
+    pthread_cancel(UPDATE_I2C_VALUES);
+}
+void force_finish(int signal){
+    finish();
+}
 int main(int argc, const char * argv[]) {
+    signal(SIGINT, force_finish);
+    signal(SIGKILL, force_finish);
     start();
 }
