@@ -9,5 +9,5 @@
 #include <time.h>
 
 void CSV();
-void insert_line(float values[], int size);
+void insert_line(char * comando, int porta);
 #endif

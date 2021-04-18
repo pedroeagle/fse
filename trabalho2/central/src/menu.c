@@ -1,4 +1,6 @@
 #include "menu.h"
+#include "csv.h"
+
 const char * Black = "\033[0;30m";
 const char * Red = "\033[0;31m";
 const char * Green = "\033[0;32m";
@@ -14,10 +16,6 @@ void clear_terminal(){
     system("clear");
     fflush(stdout);
 }
-
-/*void * read_menu(void *vargp){
-    menu();
-}*/
 
 void status_menu(){
     printf(Blue);
@@ -121,11 +119,6 @@ void status_menu(){
     printf("                                          ");
     printf(Blue);
     printf("|\n");
-    /*printf("|");
-    printf(Green);
-    printf("%s", "teste");
-    printf(Blue);
-    printf("|\n");*/
     printf("|                                                                   |\n");
     printf("|");
     printf(Blue);
@@ -261,6 +254,7 @@ void * read_menu(void *vargp){
                 port = read_lampada_to_turn_on();
                 if(port>=0){
                     send_message(get_json(port, -1));
+                    insert_line("LIGAR LAMPADA", port);
                 }
                 show_read = 1;
                 break;
@@ -269,6 +263,7 @@ void * read_menu(void *vargp){
                 port = read_lampada_to_turn_off();
                 if(port>=0){
                     send_message(get_json(-1, port));
+                    insert_line("DESLIGAR LAMPADA", port);
                 }
                 show_read = 1;
                 break;
@@ -277,6 +272,7 @@ void * read_menu(void *vargp){
                 port = read_air_to_turn_on();
                 if(port>=0){
                     send_message(get_json(port, -1));
+                    insert_line("LIGAR AR CONDICIONADO", port);
                 }
                 show_read = 1;
                 break;
@@ -285,6 +281,7 @@ void * read_menu(void *vargp){
                 port = read_air_to_turn_off();
                 if(port>=0){
                     send_message(get_json(-1, port));
+                    insert_line("DESLIGAR AR CONDICIONADO", port);
                 }
                 show_read = 1;
                 break;
@@ -292,6 +289,11 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 ALARM = !ALARM;
                 send_message(get_json(-1, -1));
+                if(ALARM){
+                    insert_line("ATIVAR ALARME", -1);
+                }else{
+                    insert_line("DESATIVAR ALARME", -1);
+                }
                 show_read = 1;
                 break;
         }

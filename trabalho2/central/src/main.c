@@ -3,10 +3,12 @@
 #include "socket.h"
 #include "menu.h"
 #include "client.h"
+#include "csv.h"
 
 pthread_t SOCKET_PTHREAD_ID, READ_PTHREAD_ID;
 
 void start(){
+    CSV();
     //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
     pthread_create(&SOCKET_PTHREAD_ID, NULL, start_socket, NULL);
     pthread_create(&READ_PTHREAD_ID, NULL, read_menu, NULL);

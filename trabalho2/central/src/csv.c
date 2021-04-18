@@ -17,20 +17,19 @@ void CSV(){
 
     fp=fopen(filename,"w+");
     
-    fprintf(fp,"");
+    fprintf(fp,"comando, porta, horario");
     fclose(fp);
  
 }
-void insert_line(float values[], int size){
+void insert_line(char * comando, int porta){
     FILE *fp;
     fp=fopen(filename, "a");
     char line[1000];
-    sprintf(line, "\n%f", values[0]);
-    for(int i = 1; i < size; i++){
-        char value[100];
-        sprintf(value, ", %f",values[i]);
-        strcpy(line, strcat(line, value));
-    }
+    char time_string[100];
+    time_t now;
+    time(&now);
+    sprintf(time_string, "%s", ctime(&now));
+    sprintf(line, "\n%s, %d, %s", comando, porta, time_string);
     fprintf(fp, line);
     fclose(fp);
 }
