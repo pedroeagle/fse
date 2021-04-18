@@ -14,6 +14,7 @@ void create_handlers();
 typedef struct gpio_component {
     int port;
     int value;
+    char name[100];
 } gpio_component;
 struct gpio_component presence_sensors[2];
 struct gpio_component open_sensors[6];
