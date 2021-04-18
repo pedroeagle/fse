@@ -49,6 +49,23 @@ void status_menu(){
     }
     printf(Blue);
     printf("|\n");
+    printf("|");
+    printf(White_Bold);
+    printf(" ARES-CONDICIONADOS                                                 ");
+    printf(Blue);
+    printf("|\n");
+    printf("|   ");
+    for(int i = 0; i < get_air_outs_lenght(); i++){
+        if(air_outs[i].value){
+            printf(Green);
+            printf("AR-CONDICIONADO %d: ON   ", i+1);
+        }else{
+            printf(White);
+            printf("AR-CONDICIONADO %d: OFF  ", i+1);
+        }
+    }
+    printf(Blue);
+    printf("|\n");
     /*printf("|");
     printf(Green);
     printf("%s", "teste");
@@ -102,7 +119,7 @@ void menu(){
 int read_lampada_to_turn_on(){
     int index;
     while(1){
-        printf("Qual o número da lâmpada deseja ligar? Digite 0 para voltar.\n");
+        printf("Digite o número da lâmpada a qual deseja LIGAR. Digite 0 para voltar.\n");
         scanf("%d", &index);
         if(!index){
             return -1;
@@ -118,7 +135,7 @@ int read_lampada_to_turn_on(){
 int read_lampada_to_turn_off(){
     int index;
     while(1){
-        printf("Qual o número da lâmpada deseja desligar? Digite 0 para voltar.\n");
+        printf("Digite o número da lâmpada a qual deseja DESLIGAR. Digite 0 para voltar.\n");
         scanf("%d", &index);
         if(!index){
             return -1;
