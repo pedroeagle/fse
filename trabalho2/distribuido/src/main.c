@@ -5,12 +5,6 @@
 #include <signal.h>
 
 pthread_t HANDLE_GPIO_PTHREAD_ID, SOCKET_PTHREAD_ID, UPDATE_I2C_VALUES;
-void * continue_function(void * argp){
-    while(1){
-        printf("temperatura: %lf, umidade: %lf\n", read_temperature(), read_humidity());
-        sleep(1);
-    };
-}
 void start(){
     //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
     pthread_create(&HANDLE_GPIO_PTHREAD_ID, NULL, GPIO, NULL);
