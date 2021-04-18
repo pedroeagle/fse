@@ -17,6 +17,19 @@
 #define SENSOR_ABERTURA_6_IN 29
 
 int HANDLER_PTHREAD_ID;
+int ALARM = 0, AUTO_MODE = 0;
+int getALARMStatus(){
+    return ALARM;
+}
+void setALARMStatus(int value){
+    ALARM = value;
+}
+int getAUTO_MODEStatus(){
+    return AUTO_MODE;
+}
+void setAUTO_MODEStatus(int value){
+    AUTO_MODE = value;
+}
 void * GPIO(void *vargp){
     printf("GPIO\n");
     wiringPiSetup ();

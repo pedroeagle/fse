@@ -24,4 +24,9 @@ int get_presence_sensors_lenght();
 int get_open_sensors_lenght();
 int get_light_outs_lenght();
 int get_air_outs_lenght();
+
+int getALARMStatus();
+void setALARMStatus(int value);
+int getAUTO_MODEStatus();
+void setAUTO_MODEStatus(int value);
 #endif
