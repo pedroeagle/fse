@@ -276,7 +276,7 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 port = read_lampada_to_turn_on();
                 if(port>=0){
-                    send_message(get_toggle_device_json(port));
+                    send_message(get_json(port));
                 }
                 show_read = 1;
                 break;
@@ -284,7 +284,7 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 port = read_lampada_to_turn_off();
                 if(port>=0){
-                    send_message(get_toggle_device_json(port));
+                    send_message(get_json(port));
                 }
                 show_read = 1;
                 break;
@@ -292,7 +292,7 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 port = read_air_to_turn_on();
                 if(port>=0){
-                    send_message(get_toggle_device_json(port));
+                    send_message(get_json(port));
                 }
                 show_read = 1;
                 break;
@@ -300,7 +300,7 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 port = read_air_to_turn_off();
                 if(port>=0){
-                    send_message(get_toggle_device_json(port));
+                    send_message(get_json(port));
                 }
                 show_read = 1;
                 break;
