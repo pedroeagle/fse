@@ -2,14 +2,27 @@
 #include "status.h"
 #include "json.h"
 
+void remove_quotes(char *string){
+    int length = strlen(string);
+    char fixed_string[500];
+    int j = 0;
+    for(int i = 0; i < length; i++){
+        if(string[i]!='"'){
+            fixed_string[j] = string[i];
+            j++;
+        }
+    }
+    fixed_string[j] = 0;
+    strcpy(string, fixed_string);
+}
 
-char * get_json(int port){
+char * get_json(int turn_on, int turn_off){
     char * out;
     cJSON *root;
     root = cJSON_CreateObject();
-    cJSON_AddItemToObject(root, "toggle", cJSON_CreateNumber(port));
+    cJSON_AddItemToObject(root, "turn_on", cJSON_CreateNumber(turn_on));
+    cJSON_AddItemToObject(root, "turn_off", cJSON_CreateNumber(turn_off));
     cJSON_AddItemToObject(root, "alarm", cJSON_CreateNumber(ALARM));
-    cJSON_AddItemToObject(root, "auto_mode", cJSON_CreateNumber(AUTO_MODE));
     out = cJSON_Print(root);
     return out;
 }
@@ -29,6 +42,7 @@ void match_json_with_devices(char * json){
         presence_sensors[i].port = atoi(cJSON_Print(cJSON_GetObjectItem(item, "port")));
         presence_sensors[i].value = atoi(cJSON_Print(cJSON_GetObjectItem(item, "value")));
         strcpy(presence_sensors[i].name, cJSON_Print(cJSON_GetObjectItem(item, "name")));
+        remove_quotes(presence_sensors[i].name);
     }
     open = cJSON_GetObjectItem(sensors, "open");
     for(int i = 0; i < get_open_sensors_lenght(); i++){
@@ -36,6 +50,7 @@ void match_json_with_devices(char * json){
         open_sensors[i].port = atoi(cJSON_Print(cJSON_GetObjectItem(item, "port")));
         open_sensors[i].value = atoi(cJSON_Print(cJSON_GetObjectItem(item, "value")));
         strcpy(open_sensors[i].name, cJSON_Print(cJSON_GetObjectItem(item, "name")));
+        remove_quotes(open_sensors[i].name);
     }
 
     outs = cJSON_GetObjectItem(root, "outs");

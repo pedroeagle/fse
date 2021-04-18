@@ -68,24 +68,24 @@ void status_menu(){
     printf("|\n");
     printf("|");
     printf(White_Bold);
-    printf(" SENSORES DE PRESENCA                                               ");
+    printf(" SENSORES DE PRESENCA                                              ");
     printf(Blue);
     printf("|\n");
     printf("|   ");
     for(int i = 0; i < get_presence_sensors_lenght(); i++){
         if(presence_sensors[i].value){
             printf(Green);
-            printf("%s %d: ON   ", presence_sensors[i].name, i+1);
+            printf("%s %d: ON                  ", presence_sensors[i].name, i+1);
         }else{
             printf(White);
-            printf("%s %d: OFF  ", presence_sensors[i].name, i+1);
+            printf("%s %d: OFF                 ", presence_sensors[i].name, i+1);
         }
     }
     printf(Blue);
     printf("|\n");
     printf("|");
     printf(White_Bold);
-    printf(" SENSORES DE ABERTURA                                               ");
+    printf(" SENSORES DE ABERTURA                                              ");
     printf(Blue);
     printf("|\n");
     printf("|   ");
@@ -97,17 +97,17 @@ void status_menu(){
         }
         if(open_sensors[i].value){
             printf(Green);
-            printf("%s: ON ", open_sensors[i].name);
+            printf("%s: ON          ", open_sensors[i].name);
         }else{
             printf(White);
-            printf("%s: OFF ", open_sensors[i].name);
+            printf("%s: OFF         ", open_sensors[i].name);
         }
     }
     printf(Blue);
     printf("|\n");
     printf("|");
     printf(White_Bold);
-    printf(" CONTROLE GERAL                                                   ");
+    printf(" CONTROLE GERAL                                                    ");
     printf(Blue);
     printf("|\n");
     printf("|       ");
@@ -177,15 +177,6 @@ void menu(){
             printf("       5 - DESATIVAR ALARME                                        ");
         }else{
             printf("       5 - ATIVAR ALARME                                           ");
-        }
-        printf(Blue);
-        printf("|\n");
-        printf("|");
-        printf(Yellow);
-        if(AUTO_MODE){
-            printf("       6 - DESATIVAR AUTO MODE                                     ");
-        }else{
-            printf("       6 - ATIVAR AUTO MODE                                        ");
         }
         printf(Blue);
         printf("|\n");
@@ -276,7 +267,7 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 port = read_lampada_to_turn_on();
                 if(port>=0){
-                    send_message(get_json(port));
+                    send_message(get_json(port, -1));
                 }
                 show_read = 1;
                 break;
@@ -284,7 +275,7 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 port = read_lampada_to_turn_off();
                 if(port>=0){
-                    send_message(get_json(port));
+                    send_message(get_json(-1, port));
                 }
                 show_read = 1;
                 break;
@@ -292,7 +283,7 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 port = read_air_to_turn_on();
                 if(port>=0){
-                    send_message(get_json(port));
+                    send_message(get_json(port, -1));
                 }
                 show_read = 1;
                 break;
@@ -300,23 +291,18 @@ void * read_menu(void *vargp){
                 show_read = 0;
                 port = read_air_to_turn_off();
                 if(port>=0){
-                    send_message(get_json(port));
+                    send_message(get_json(-1, port));
                 }
                 show_read = 1;
                 break;
             case '5':
                 show_read = 0;
                 ALARM = !ALARM;
-                //send_message
-                show_read = 1;
-                break;
-            case '6':
-                show_read = 0;
-                AUTO_MODE = !AUTO_MODE;
-                //send_message
+                send_message(get_json(-1, -1));
                 show_read = 1;
                 break;
         }
+        menu();
     }while(option!='0');
     finish();
 }
