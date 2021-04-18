@@ -51,17 +51,17 @@ void status_menu(){
     printf("|\n");
     printf("|");
     printf(White_Bold);
-    printf(" ARES-CONDICIONADOS                                                 ");
+    printf(" ARES-CONDICIONADOS                                                ");
     printf(Blue);
     printf("|\n");
     printf("|   ");
     for(int i = 0; i < get_air_outs_lenght(); i++){
         if(air_outs[i].value){
             printf(Green);
-            printf("AR-CONDICIONADO %d: ON   ", i+1);
+            printf("AR-CONDICIONADO %d: ON           ", i+1);
         }else{
             printf(White);
-            printf("AR-CONDICIONADO %d: OFF  ", i+1);
+            printf("AR-CONDICIONADO %d: OFF          ", i+1);
         }
     }
     printf(Blue);
@@ -90,17 +90,17 @@ void status_menu(){
     printf("|\n");
     printf("|   ");
     for(int i = 0; i < get_open_sensors_lenght(); i++){
-        if(i == 3){
+        if(i == 2 || i == 4){
             printf(Blue);
             printf("|\n");
-            printf("|");
+            printf("|   ");
         }
         if(open_sensors[i].value){
             printf(Green);
-            printf("%s %d: ON   ", presence_sensors[i].name, i+1);
+            printf("%s: ON ", open_sensors[i].name);
         }else{
             printf(White);
-            printf("%s %d: OFF  ", presence_sensors[i].name, i+1);
+            printf("%s: OFF ", open_sensors[i].name);
         }
     }
     printf(Blue);
@@ -110,7 +110,7 @@ void status_menu(){
     printf(" CONTROLE GERAL                                                   ");
     printf(Blue);
     printf("|\n");
-    printf("|   ");
+    printf("|       ");
     if(ALARM){
         printf(Green);
         printf("ALARME: ATIVADO   ");
@@ -118,13 +118,13 @@ void status_menu(){
         printf(Red);
         printf("ALARME: DESATIVADO");
     }
-    printf("            ");
+    printf("                   ");
     if(AUTO_MODE){
         printf(Green);
-        printf("AUTO MODE: ATIVADO   ");
+        printf("AUTO MODE: ATIVADO     ");
     }else{
         printf(Red);
-        printf("AUTO MODE: DESATIVADO");
+        printf("AUTO MODE: DESATIVADO  ");
     }
     printf(Blue);
     printf("|\n");
@@ -174,7 +174,7 @@ void menu(){
         printf("|");
         printf(Yellow);
         if(ALARM){
-            printf("       5 - DESATIVAR ALARME                                         ");
+            printf("       5 - DESATIVAR ALARME                                        ");
         }else{
             printf("       5 - ATIVAR ALARME                                           ");
         }

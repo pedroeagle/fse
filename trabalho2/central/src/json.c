@@ -33,7 +33,7 @@ void match_json_with_devices(char * json){
         cJSON *item = cJSON_GetArrayItem(open, i);
         open_sensors[i].port = atoi(cJSON_Print(cJSON_GetObjectItem(item, "port")));
         open_sensors[i].value = atoi(cJSON_Print(cJSON_GetObjectItem(item, "value")));
-        strcpy(open_sensors[i].name, cJSON_Print(cJSON_GetObjectItem(item, "value")));
+        strcpy(open_sensors[i].name, cJSON_Print(cJSON_GetObjectItem(item, "name")));
     }
 
     outs = cJSON_GetObjectItem(root, "outs");
