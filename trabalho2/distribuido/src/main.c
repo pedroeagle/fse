@@ -14,10 +14,10 @@ void * continue_function(void * argp){
 void start(){
     //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
     pthread_create(&HANDLE_GPIO_PTHREAD_ID, NULL, GPIO, NULL);
-    //pthread_create(&SOCKET_PTHREAD_ID, NULL, start_socket, NULL);
+    pthread_create(&SOCKET_PTHREAD_ID, NULL, start_socket, NULL);
     pthread_create(&UPDATE_I2C_VALUES, NULL, I2C, NULL);
     pthread_join(HANDLE_GPIO_PTHREAD_ID, NULL);
-    //pthread_join(SOCKET_PTHREAD_ID, NULL);
+    pthread_join(SOCKET_PTHREAD_ID, NULL);
     pthread_join(UPDATE_I2C_VALUES, NULL);
 }
 void finish(){
