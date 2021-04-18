@@ -21,7 +21,6 @@ void force_finish(int signal){
     finish();
 }
 int main(int argc, const char * argv[]) {
-
     signal(SIGINT, force_finish);
     signal(SIGKILL, force_finish);
     start();
