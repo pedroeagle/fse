@@ -133,25 +133,22 @@ void create_handlers () {
     int length_light = sizeof(light_ports)/sizeof(light_ports[0]);
     int length_air = sizeof(air_ports)/sizeof(air_ports[0]);
     for(int i = 0; i < length_presence; i++){
-        pinMode(presence_ports[i], INPUT);
         presence_sensors[i].port = presence_ports[i];
         presence_sensors[i].value = read_gpio(presence_ports[i]);
+        strcpy(presence_sensors[i].name, "PRESENCA");
         wiringPiISR(presence_ports[i], INT_EDGE_BOTH, functions[i]);
     }
     for(int i = 0; i <length_open; i++){
-        pinMode(open_ports[i], INPUT);
         open_sensors[i].port = open_ports[i];
         open_sensors[i].value = read_gpio(open_ports[i]);
         wiringPiISR(open_ports[i], INT_EDGE_BOTH, functions[i+length_presence]);
     }
     for(int i = 0; i <length_light; i++){
-        pinMode(light_ports[i], INPUT);
         light_outs[i].port = light_ports[i];
         light_outs[i].value = read_gpio(light_ports[i]);
         wiringPiISR(light_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open]);
     }
     for(int i = 0; i <length_air; i++){
-        pinMode(air_ports[i], INPUT);
         air_outs[i].port = air_ports[i];
         air_outs[i].value = read_gpio(air_ports[i]);
         wiringPiISR(air_ports[i], INT_EDGE_BOTH, functions[i+length_presence+length_open+length_light]);

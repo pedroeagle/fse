@@ -9,6 +9,7 @@ char * gpio_component_to_json_string(gpio_component * gpio_comps, int length){
         cJSON_AddItemToArray(root, sensor = cJSON_CreateObject());
         cJSON_AddItemToObject(sensor, "port", cJSON_CreateNumber(gpio_comps[i].port));
         cJSON_AddItemToObject(sensor, "value", cJSON_CreateNumber(gpio_comps[i].value));
+        cJSON_AddItemToObject(sensor, "name", cJSON_CreateNumber(gpio_comps[i].name));
         out = cJSON_Print(root);
     }
     return out;
