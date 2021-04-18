@@ -318,5 +318,5 @@ void * read_menu(void *vargp){
                 break;
         }
     }while(option!='0');
-    //finish();
+    finish();
 }

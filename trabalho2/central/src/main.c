@@ -13,6 +13,16 @@ void start(){
     pthread_join(SOCKET_PTHREAD_ID, NULL);
     pthread_join(READ_PTHREAD_ID, NULL);
 }
+void finish(){
+    pthread_cancel(SOCKET_PTHREAD_ID);
+    pthread_cancel(READ_PTHREAD_ID);
+}
+void force_finish(int signal){
+    finish();
+}
 int main(int argc, const char * argv[]) {
+
+    signal(SIGINT, force_finish);
+    signal(SIGKILL, force_finish);
     start();
 }
