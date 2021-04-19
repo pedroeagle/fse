@@ -4,13 +4,13 @@
 void  * play_alarm(void *vargp){
     printf("ALARM %d\n", check_alarm());
     while(check_alarm()==1){
+        printf("Tocando alarme\n");
         char command[1000], cwd[500];
         strcpy(command, "aplay ");
         getcwd(cwd, sizeof(cwd));
         strcat(command, cwd);
-        strcat(command, "/audio/alarm.mp3");
+        strcat(command, "/audio/alarm.mp3 > /dev/null");
         system(command);
-        printf("Tocando alarme\n");
     }
     pthread_exit(NULL);
 }
