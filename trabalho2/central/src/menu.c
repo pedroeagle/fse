@@ -126,6 +126,7 @@ void status_menu(){
     if(check_alarm()==1){
         if(!already_played){
             already_played=1;
+            insert_line("**ALERTA: ALARME ACIONADO**", -1);
             pthread_create(&ALARM_PTHREAD_ID, NULL, play_alarm, NULL);
         }
         printf(Red);
