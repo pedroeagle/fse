@@ -2,7 +2,6 @@
 #define I2C_ADDR 0x76
 
 void * I2C(void *vargp){
-    printf("I2C\n");
     bme280Init(1, I2C_ADDR);
     get_i2c_values();
 }

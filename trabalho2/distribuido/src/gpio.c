@@ -34,7 +34,6 @@ void * GPIO(void *vargp){
     create_handlers();
 }
 void turn_on(int gpio_port){
-    pinMode(gpio_port, OUTPUT);
     digitalWrite(gpio_port, HIGH);
     return;
 }
@@ -44,7 +43,6 @@ void turn_off(int gpio_port){
 }
 int read_gpio(int gpio_port){
     int value = digitalRead(gpio_port);
-    printf("porta: %d valor: %d\n", gpio_port, value);
     return value;
 }
 void TURN_OFF_GPIO(){

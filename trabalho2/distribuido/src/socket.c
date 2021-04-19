@@ -2,7 +2,6 @@
 #define SERVER_PORT 10125
 #define MAX 512
 void * start_socket(void *vargp) {
-	printf("SOCKET\n");
 	int listenfd = 0,connfd = 0, n = 0;
 
 	struct sockaddr_in serv_addr;
@@ -31,9 +30,6 @@ void * start_socket(void *vargp) {
 		connfd = accept(listenfd, (struct sockaddr*)NULL ,NULL); // accept awaiting request
 		while((n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0){
 			recvBuff[n] = 0;
-			/*if(fputs(recvBuff, stdout) == EOF){
-				printf("\n Error : Fputs error");
-			}*/
 			parse_json(recvBuff);
 		}
 	
