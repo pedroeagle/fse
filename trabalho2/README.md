@@ -1,39 +1,30 @@
-# PROJETO 1 - FUNDAMENTOS DE SISTEMAS EMBARCADOS
+# PROJETO 2 - FUNDAMENTOS DE SISTEMAS EMBARCADOS
 
-Projeto 1 da disciplina de Fundamentos de Sistemas Embarcados (2020/2)
+Projeto 2 da disciplina de Fundamentos de Sistemas Embarcados (2020/2)
 
 ## 1. Objetivos
-Este trabalho tem por objetivo a implementação do controle de temperatura de um sistema que possui internamente dois dispositivos para alterar sua temperatura. O primeiro é um resistor de potência de 15 Watts utilziado para aumentar temperatura e o segundo, uma ventoinha que puxa o ar externo (à temperatura ambiente) para reduzir a temperatura.
-A temperatura de referência (TR) deve poder ser definida pelo usuário do sistema de duas maneiras:
+Este trabalho tem por objetivo a criação de um sistema distribuído de automação residencial para monitoramento e acionamento de sensores e dispositivos. O sistema deve ser desenvolvido para funcionar em um conjunto de placas Raspberry Pi com um servidor central responsável pelo controle e interface com o usuário e servidores distribuídos para leitura e acionamento dos dispositivos. Dentre os dispositivos envolvidos estão o monitoramento de temperatura, sensores de presença, sensores de abertura e fechamento de portas e janelas, acionamento de lâmpadas, aparelhos de ar-condicionado e alarme.
 
-Através de um Potenciômetro;
-Através de entrada de teclado no terminal.
+A raspberry responsável pelo servidor central mostra em tempo real o estado de sensores, lâmpadas, ar-condicionados e alarmes. Além disso é mostrada a temperatura e umidade do ambiente. O usuário pode ligar e desligar qualquer lâmpada e ar-condicionado a qualquer momento além de ativar o alarme que quando ativado, toca um alarme ao perceber presença ou abertura de porta/janela.
 
-O controle de temperatura do sistema deve ser realizado utilizando a abordagem de controle PID (Proporcional Integral Derivativo). O PID é um dos tipos mais simples de algoritmos de controle que proporciona um bom desempenho para uma grande variedade de aplicações.
-Neste caso, quando o valor medido de temperatura ficar abaixo do limite inferior, o controlador deverá acionar o resistor de potência para aquecer o sistema. Caso a temperatura medida esteja acima do limite superior, o controlador deve desligar a resistência e acionar a ventoinha.
+Já a raspberry responsável pelo servidor distribuído consulta a cada um segundo os valores de umidade e temperatura além de ser sensível a mudanças nos sensores, lâmpadas e ar-condicionados de forma que mantenha o servidor central sempre atualizado.
+
+É gerado um arquivo csv indicando cada uma das funcionalidades solicitadas pelo usuário assim como acionamento do alarme.
 
 ## 2. Como executar
-Basta dar clone no [repositório pessoal de FSE](https://github.com/pedroeagle/fse) e abrir o diretótio **trabalho1**. Dentro do diretório do trabalho basta executar o comando `make` no terminal para compilar o programa e `make run` para iniciar o programa.
+Basta dar clone no [repositório pessoal de FSE](https://github.com/pedroeagle/fse) e abrir o diretótio **trabalho2**. Dentro do diretório do trabalho existem dois diretórios: **central** e **distribuido**. Basta executar o comando `make` no terminal para compilar o programa e `make run` para iniciar o programa no diretório adequado para a raspberry respectiva.
 
 ## 3. Entradas e Saídas 
-O projeto roda em uma Raspberry Pi 4 conectada a um Arduino. Conectada às placas estão alguns componentes úteis para entrada e saída de informações.
-- TI: Temperatura interna, lida pelo padrão de comunicação UART. Lido do sensor LM35 conectado ao Arduino.
-- TE: Temperatura externa, lida pelo padrão de comunicação I2C. Lido do sensor BME280 conectado à Raspberry.
-- TP: Temperatura do potenciômetro, lida pelo padrão de comunicação UART. Lido do potenciômetro conectado ao Arduino.
-- TT: Temperatura do terminal, lida no terminal de execução do programa.
+- Ao selecionar a primeira opção o usuário pode selecionar qual lâmpada quer ligar.
+- Ao selecionar a segunda opção o usuário pode selecionar qual lâmpada quer desligar (é solicitada uma lâmpada que esteja ligada).
+- Ao selecionar a terceira opção o usuário pode selecionar qual ar-condicionado quer ligar.
+- Ao selecionar a quarta opção o usuário pode selecionar qual ar-condicionado quer desligar (é solicitado um ar-condicionado que esteja ligado).
+- Ao selecionar a quinta opção o usuário pode ativar ou desativar o alarme. Caso um sensor seja acionado enquanto alarme está ativado é tocado um som até que o sensor ou alarme sejam desativados.
 
-Ao escolher, como temperatura de referência, a temperatura do potenciômetro esta então é atualizada para a TP mais atual. Ao selecionar a temperatura do terminal como referência a do potenciômetro é então substituída.
-A cada 2s é atualizado um arquivo csv no diretório `/log`. É criado um arquivo novo para cada execução, o nome do arquivo é a data e horário iniciais de execução do programa.
+A cada funcionalidade solicitada pelo usuário é atualizado um arquivo csv no diretório `/log`. É criado um arquivo novo para cada execução, o nome do arquivo é a data e horário iniciais de execução do programa.
 
 ## 4. Funcionalidades
-O terminal atualizará na frequência de 1s o valor das temperaturas TI, TE, TP, TT, TR.<br>
+Tela principal do programa nas raspberry do servidor central.<br>
 ![Primeira tela do programa](img/screen1.png)<br>
-Definindo a temperatura a partir do terminal: TT.<br>
-![Segunda tela do programa](img/screen2.png)
-
-## 5. Gráficos
-### Gráfico temperaturas Ambiente, Interna e Referência (Potenciômetro)
-![Gráfico 1](img/chart1.png)
-
-### Gráfico acionadores (ventoinha, resistor)
-![Gráfico 2](img/chart2.png)
+Tela principal após o alarme ser acionado. <br>
+![Segunda tela do programa](img/screen2.png) <br>
