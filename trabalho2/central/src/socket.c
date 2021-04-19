@@ -25,11 +25,9 @@ void * start_socket(void *vargp) {
 	if(listen(listenfd, 10) == -1){
 		printf("Failed to listen\n");
 		return -1;
-	}     
-	printf("AAAA\n");
+	}
 	while(1){    
 		connfd = accept(listenfd, (struct sockaddr*)NULL ,NULL); // accept awaiting request
-		printf("AQUI\n");  
 		while((n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0){
 			recvBuff[n] = 0;
 		}

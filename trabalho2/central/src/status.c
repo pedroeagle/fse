@@ -14,7 +14,6 @@ int get_air_outs_lenght(){
 }
 void setAlarm(int value){
     ALARM = value;
-    printf("NOVO ALARM %d\n", getAlarm());
 }
 int getAlarm(){
     return ALARM;
