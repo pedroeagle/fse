@@ -25,7 +25,6 @@ void setALARMStatus(int value){
     ALARM = value;
 }
 void * GPIO(void *vargp){
-    printf("GPIO\n");
     wiringPiSetup ();
     int ports[] = {LAMPADA_1_OUT, LAMPADA_2_OUT, LAMPADA_3_OUT, LAMPADA_4_OUT, AR_COND_1_OUT, AR_COND_2_OUT};
     int length = sizeof(ports)/sizeof(ports[0]);

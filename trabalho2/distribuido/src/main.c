@@ -9,7 +9,7 @@ void start(){
     //CRIANDO TODAS AS THREADS QUE EXECUTARÃO SIMULTANEAMENTE
     pthread_create(&HANDLE_GPIO_PTHREAD_ID, NULL, GPIO, NULL);
     pthread_create(&SOCKET_PTHREAD_ID, NULL, start_socket, NULL);
-    //pthread_create(&UPDATE_I2C_VALUES, NULL, I2C, NULL);
+    pthread_create(&UPDATE_I2C_VALUES, NULL, I2C, NULL);
     pthread_join(HANDLE_GPIO_PTHREAD_ID, NULL);
     pthread_join(SOCKET_PTHREAD_ID, NULL);
     pthread_join(UPDATE_I2C_VALUES, NULL);
@@ -18,7 +18,7 @@ void finish(){
     CLOSE_I2C();
     pthread_cancel(HANDLE_GPIO_PTHREAD_ID);
     pthread_cancel(SOCKET_PTHREAD_ID);
-    //pthread_cancel(UPDATE_I2C_VALUES);
+    pthread_cancel(UPDATE_I2C_VALUES);
 }
 void force_finish(int signal){
     finish();
