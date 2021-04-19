@@ -22,7 +22,6 @@ char * get_json(int turn_on, int turn_off){
     root = cJSON_CreateObject();
     cJSON_AddItemToObject(root, "turn_on", cJSON_CreateNumber(turn_on));
     cJSON_AddItemToObject(root, "turn_off", cJSON_CreateNumber(turn_off));
-    cJSON_AddItemToObject(root, "alarm", cJSON_CreateNumber(ALARM));
     out = cJSON_Print(root);
     return out;
 }

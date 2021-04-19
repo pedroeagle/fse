@@ -26,13 +26,15 @@ void * start_socket(void *vargp) {
 		printf("Failed to listen\n");
 		return -1;
 	}     
-
-	while(1){      
+	printf("AAAA\n");
+	while(1){    
 		connfd = accept(listenfd, (struct sockaddr*)NULL ,NULL); // accept awaiting request
+		printf("AQUI\n");  
 		while((n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0){
 			recvBuff[n] = 0;
 		}
 		match_json_with_devices(recvBuff);
+		
 		menu();
 	if( n < 0){
 		printf("\n Read Error \n");

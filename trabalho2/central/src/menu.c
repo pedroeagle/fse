@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "csv.h"
+#include "alarm.h"
 
 const char * Black = "\033[0;30m";
 const char * Red = "\033[0;31m";
@@ -16,7 +17,8 @@ void clear_terminal(){
     system("clear");
     fflush(stdout);
 }
-
+pthread_t ALARM_PTHREAD_ID;
+int already_played = 0;
 void status_menu(){
     printf(Blue);
     printf("█████████████████████");
@@ -121,7 +123,19 @@ void status_menu(){
     printf("|\n");
     printf("|                                                                   |\n");
     printf("|");
+    if(check_alarm()==1){
+        if(!already_played){
+            already_played=1;
+            pthread_create(&ALARM_PTHREAD_ID, NULL, play_alarm, NULL);
+        }
+        printf(Red);
+        printf("******  ALERTA: O ALARME ESTÁ TOCANDO. DESATIVE PARA PARAR. *******");
+    }else{
+        printf("                                                                   ");
+    }
     printf(Blue);
+    printf("|\n");
+    printf("|");
     printf("___________________________________________________________________");
     printf("|\n");
     printf("|                                                                   |\n");
@@ -159,7 +173,7 @@ void menu(){
         printf("|\n");
         printf("|");
         printf(Yellow);
-        if(ALARM){
+        if(getAlarm()==1){
             printf("       5 - DESATIVAR ALARME                                        ");
         }else{
             printf("       5 - ATIVAR ALARME                                           ");
@@ -242,7 +256,9 @@ int read_air_to_turn_off(){
     }
     return air_outs[index-1].port;
 }
+
 void * read_menu(void *vargp){
+    setAlarm(0);
     char option;
     int port;
     do{
@@ -287,12 +303,14 @@ void * read_menu(void *vargp){
                 break;
             case '5':
                 show_read = 0;
-                ALARM = !ALARM;
-                send_message(get_json(-1, -1));
-                if(ALARM){
+                setAlarm(!ALARM);
+                if(getAlarm() == 1){
                     insert_line("ATIVAR ALARME", -1);
+                    setAlarm(1);
                 }else{
                     insert_line("DESATIVAR ALARME", -1);
+                    already_played = 0;
+                    setAlarm(0);
                 }
                 show_read = 1;
                 break;

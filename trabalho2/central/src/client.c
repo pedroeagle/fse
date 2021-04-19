@@ -1,5 +1,5 @@
 #include "client.h"
-#define SERVER_IP "192.168.0.52"
+#define SERVER_IP "192.168.0.4"
 #define SERVER_PORT 10125
 
 int send_message(char * message) {

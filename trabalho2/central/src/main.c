@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "client.h"
 #include "csv.h"
+#include "alarm.h"
 
 pthread_t SOCKET_PTHREAD_ID, READ_PTHREAD_ID;
 

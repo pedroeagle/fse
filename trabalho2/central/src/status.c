@@ -12,3 +12,10 @@ int get_light_outs_lenght(){
 int get_air_outs_lenght(){
     int length = sizeof(air_outs)/sizeof(air_outs[0]);
 }
+void setAlarm(int value){
+    ALARM = value;
+    printf("NOVO ALARM %d\n", getAlarm());
+}
+int getAlarm(){
+    return ALARM;
+}

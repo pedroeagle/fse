@@ -1,6 +1,6 @@
 #ifndef STATUS_H_
 #define STATUS_H_
-int ALARM, AUTO_MODE;
+int ALARM;
 float TEMPERATURE, HUMIDITY;
 typedef struct gpio_component {
     int port;
@@ -15,4 +15,6 @@ int get_presence_sensors_lenght();
 int get_open_sensors_lenght();
 int get_light_outs_lenght();
 int get_air_outs_lenght();
+void setAlarm(int value);
+int getAlarm();
 #endif
