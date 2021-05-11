@@ -40,7 +40,7 @@ def subscribe(client: mqtt_client, topic):
 
 def run():
     client_id = str(input('Digite o id a ser utilizado pelo server\n'))
-    topic=client_id+'/devices'
+    topic='fse2020/'+client_id+'/dispositivos/#'
     client = connect_mqtt(client_id)
     subscribe(client, topic)
     client.loop_forever()
