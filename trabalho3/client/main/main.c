@@ -51,25 +51,11 @@ void trataComunicacaoComServidor(void * params)
 
 void app_main()
 {
-  gpio_num_t GPIO_SENSOR_NUM = 36;
+  gpio_num_t GPIO_SENSOR_NUM = 16;
   float t, h;
   while(true){
-    ESP_LOGI("Port", "port: %d", GPIO_SENSOR_NUM);
     dht_read_float_data(DHT_TYPE_DHT11, GPIO_SENSOR_NUM, &t, &h);
-    ESP_LOGI("A", "port: %d, temperature: %f, humidity: %f", GPIO_SENSOR_NUM, t, h);
+    ESP_LOGI("DHT11", "temperature: %f, humidity: %f", t, h);
     vTaskDelay(3000 / portTICK_PERIOD_MS);
-    GPIO_SENSOR_NUM++;
-    if(GPIO_SENSOR_NUM==7){
-      GPIO_SENSOR_NUM+=2;
-    }
-    if(GPIO_SENSOR_NUM==11){
-      GPIO_SENSOR_NUM++;
-    }
-    if(GPIO_SENSOR_NUM==20){
-      GPIO_SENSOR_NUM++;
-    }
-    if(GPIO_SENSOR_NUM==24){
-      GPIO_SENSOR_NUM++;
-    }
   }
 }
