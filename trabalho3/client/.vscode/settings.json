@@ -13,6 +13,8 @@
     "files.associations": {
         "*.md": "markdown",
         "*.mdx": "tdx",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "esp_idf_lib_helpers.h": "c",
+        "mqtt.h": "c"
     }
 }

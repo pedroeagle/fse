@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <string.h>
 #include "nvs_flash.h"
 #include "esp_wifi.h"
@@ -6,11 +5,20 @@
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "freertos/semphr.h"
+#include <stdio.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include "esp_system.h"
+#include "freertos/event_groups.h"
+#include "esp_event.h"
+#include "nvs_flash.h"
+#include "esp_log.h"
 
+#include "dht.h"
+//#include <dht/dht.h>
 #include "wifi.h"
 #include "http_client.h"
 #include "mqtt.h"
-
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle conexaoMQTTSemaphore;
 
@@ -41,20 +49,27 @@ void trataComunicacaoComServidor(void * params)
   }
 }
 
-void app_main(void)
+void app_main()
 {
-    // Inicializa o NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
+  gpio_num_t GPIO_SENSOR_NUM = 36;
+  float t, h;
+  while(true){
+    ESP_LOGI("Port", "port: %d", GPIO_SENSOR_NUM);
+    dht_read_float_data(DHT_TYPE_DHT11, GPIO_SENSOR_NUM, &t, &h);
+    ESP_LOGI("A", "port: %d, temperature: %f, humidity: %f", GPIO_SENSOR_NUM, t, h);
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    GPIO_SENSOR_NUM++;
+    if(GPIO_SENSOR_NUM==7){
+      GPIO_SENSOR_NUM+=2;
     }
-    ESP_ERROR_CHECK(ret);
-    
-    conexaoWifiSemaphore = xSemaphoreCreateBinary();
-    conexaoMQTTSemaphore = xSemaphoreCreateBinary();
-    wifi_start();
-
-    xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
-    xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
+    if(GPIO_SENSOR_NUM==11){
+      GPIO_SENSOR_NUM++;
+    }
+    if(GPIO_SENSOR_NUM==20){
+      GPIO_SENSOR_NUM++;
+    }
+    if(GPIO_SENSOR_NUM==24){
+      GPIO_SENSOR_NUM++;
+    }
+  }
 }

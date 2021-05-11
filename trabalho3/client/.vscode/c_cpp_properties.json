@@ -2,7 +2,7 @@
     "env": {
         "MESSAGE": " MAC AND LINUX USERS!!!- change path from c:/... to ~/esp/... or as approirate for your enviroment",
         "IDF_TOOLS": "/home/eagle/.espressif/tools",
-        "IDF_PATH": "/home/eagle/esp/esp-idf"
+        "IDF_PATH": "/home/eagle/Documentos/esp/esp-idf"
     },
     "configurations": [
         {
