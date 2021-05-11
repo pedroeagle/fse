@@ -1,0 +1,21 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/home/eagle/Documentos/esp/esp-idf/components/bootloader/subproject",
+    "build_dir":          "/home/eagle/Documentos/fse/trabalho3/build/bootloader",
+    "config_file":        "/home/eagle/Documentos/fse/trabalho3/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v4.4-dev-960-gcf457d412",
+    "target":             "esp32",
+    "rev":                "0",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/home/eagle/Documentos/esp/esp-idf/components/efuse/Kconfig;/home/eagle/Documentos/esp/esp-idf/components/esp32/Kconfig;/home/eagle/Documentos/esp/esp-idf/components/esp_common/Kconfig;/home/eagle/Documentos/esp/esp-idf/components/esp_hw_support/Kconfig;/home/eagle/Documentos/esp/esp-idf/components/esp_system/Kconfig;/home/eagle/Documentos/esp/esp-idf/components/freertos/Kconfig;/home/eagle/Documentos/esp/esp-idf/components/log/Kconfig;/home/eagle/Documentos/esp/esp-idf/components/newlib/Kconfig;/home/eagle/Documentos/esp/esp-idf/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/home/eagle/Documentos/esp/esp-idf/components/bootloader/Kconfig.projbuild;/home/eagle/Documentos/esp/esp-idf/components/esp_rom/Kconfig.projbuild;/home/eagle/Documentos/esp/esp-idf/components/esptool_py/Kconfig.projbuild;/home/eagle/Documentos/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_hw_support", "esp_rom", "esp_system", "esptool_py", "freertos", "hal", "log", "main", "micro-ecc", "newlib", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "/home/eagle/Documentos/esp/esp-idf/components/bootloader", "/home/eagle/Documentos/esp/esp-idf/components/bootloader_support", "/home/eagle/Documentos/esp/esp-idf/components/efuse", "/home/eagle/Documentos/esp/esp-idf/components/esp32", "/home/eagle/Documentos/esp/esp-idf/components/esp_common", "/home/eagle/Documentos/esp/esp-idf/components/esp_hw_support", "/home/eagle/Documentos/esp/esp-idf/components/esp_rom", "/home/eagle/Documentos/esp/esp-idf/components/esp_system", "/home/eagle/Documentos/esp/esp-idf/components/esptool_py", "/home/eagle/Documentos/esp/esp-idf/components/freertos", "/home/eagle/Documentos/esp/esp-idf/components/hal", "/home/eagle/Documentos/esp/esp-idf/components/log", "/home/eagle/Documentos/esp/esp-idf/components/bootloader/subproject/main", "/home/eagle/Documentos/esp/esp-idf/components/bootloader/subproject/components/micro-ecc", "/home/eagle/Documentos/esp/esp-idf/components/newlib", "/home/eagle/Documentos/esp/esp-idf/components/partition_table", "/home/eagle/Documentos/esp/esp-idf/components/soc", "/home/eagle/Documentos/esp/esp-idf/components/spi_flash", "/home/eagle/Documentos/esp/esp-idf/components/xtensa", "" ]
+}
