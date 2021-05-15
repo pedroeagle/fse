@@ -15,9 +15,7 @@
 #include "esp_log.h"
 
 #include "dht.h"
-//#include <dht/dht.h>
 #include "wifi.h"
-#include "http_client.h"
 #include "mqtt.h"
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle conexaoMQTTSemaphore;
