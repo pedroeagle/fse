@@ -19,7 +19,13 @@
 #include "mqtt.h"
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle conexaoMQTTSemaphore;
-gpio_num_t GPIO_SENSOR_NUM = 16;
+
+#define GPIO_DHT      ESP_DHT_GPIO_NUMBER
+#define GPIO_LED      ESP_LED_GPIO_NUMBER
+#define GPIO_BUTTON   ESP_BUTTON_GPIO_NUMBER
+
+
+gpio_num_t GPIO_SENSOR_NUM = GPIO_DHT;
 void conectadoWifi(void *params)
 {
   while (true)
@@ -34,7 +40,7 @@ void conectadoWifi(void *params)
 
 void trataComunicacaoComServidor(void *params)
 {
-  char mensagem[50];
+  char mensagem[50], mensagemHum[50];
   if (xSemaphoreTake(conexaoMQTTSemaphore, portMAX_DELAY))
   {
     while (true)
@@ -42,13 +48,17 @@ void trataComunicacaoComServidor(void *params)
       uint8_t mac;
       esp_base_mac_addr_get(&mac);
       float t, h;
-      dht_read_float_data(DHT_TYPE_DHT11, GPIO_SENSOR_NUM, &t, &h);
+      dht_read_float_data(DHT_TYPE_DHT11, GPIO_SENSOR_NUM, &h, &t);
       sprintf(mensagem, "temperatura1: %f", t);
+      sprintf(mensagemHum, "Umidade1: %f", h);
+
       char path[100];
-      strcpy(path, "fse2020/170062635/dispositivos/");
+      strcpy(path, "fse2020/160000840/dispositivos/");
       itoa(mac, &path[strlen(path)], 10);
       ESP_LOGI("A", "%d\n", mac);
       mqtt_envia_mensagem(path, mensagem);
+      vTaskDelay(3000 / portTICK_PERIOD_MS);
+      mqtt_envia_mensagem(path, mensagemHum);
       vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
   }
