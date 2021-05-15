@@ -3,7 +3,7 @@ import Input from '@material-ui/core/Input';
 import { Button, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import './NewDeviceModal.css';
 import { useState } from 'react';
-function NewDeviceModal({ modalVisible, setModalVisible, modo, submitFunction }) {
+function NewDeviceModal({ modalVisible, setModalVisible, modo, submitFunction, device }) {
     const [comodo, setComodo] = useState('');
     const [entrada, setEntrada] = useState('');
     const [saida, setSaida] = useState(null);
@@ -20,7 +20,7 @@ function NewDeviceModal({ modalVisible, setModalVisible, modo, submitFunction })
                 <TextField label="Nome da saída" id="saida" onChange={(value) => { setSaida(value.target.value) }} />
             </ModalBody> : null}
             <ModalFooter>
-                <Button onClick={()=>{submitFunction({comodo, entrada, saida}); setModalVisible(false)}}>Cadastrar</Button>
+                <Button onClick={()=>{submitFunction({comodo, entrada, saida, device}); setModalVisible(false)}}>Cadastrar</Button>
             </ModalFooter>
         </Modal>
     );

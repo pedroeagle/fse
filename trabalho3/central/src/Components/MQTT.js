@@ -14,6 +14,8 @@ function MQTT() {
   const [newDevicesHost, setNewDevicesHost] = useState('');
   const [modalNewBatteryDeviceVisible, setModalNewBatteryDeviceVisible] = useState(false);
   const [modalNewEnergyDeviceVisible, setModalNewEnergyDeviceVisible] = useState(false);
+  const [deviceInModal, setDeviceInModal] = useState('');
+
   const topic = '';
   const options = {};
 
@@ -91,7 +93,6 @@ function MQTT() {
   }
 
   const addDevice = (device, modo) => {
-    console.log(device, modo);
     switch (modo) {
       case "energia":
         setModalNewEnergyDeviceVisible(true);
@@ -100,26 +101,36 @@ function MQTT() {
         setModalNewBatteryDeviceVisible(true);
         break;
     }
+    setDeviceInModal(device);
   }
-  const denyDevice = (device, modo) => {
-    console.log(device);
+  const removeDeviceFromAddList = (device, modo) => {
+    switch (modo) {
+      case "bateria":
+        setBatteryDevicesToAdd(batteryDevicesToAdd.filter((item)=>item!=device));
+        break;
+    
+      case "energia":
+        setEnergyDevicesToAdd(energyDevicesToAdd.filter((item)=>item!=device));
+        break;
+    }
   }
 
   const includeBatteryDevice = (device)=>{
     console.log(device);
     setBatteryDevices(batteryDevices=> ([...batteryDevices, device]));
+    removeDeviceFromAddList(device, "bateria");
   }
   const includeEnergyDevice = (device)=>{
-    console.log(device);
     setEnergyDevices(EnergyDevices=> ([...EnergyDevices, device]));
+    removeDeviceFromAddList(device.device, "energia");
   }
 
   return (
     <div className="App">
-      <CardDeviceToAdd text={"Dispositivo a bateria encontrado: "} devices={batteryDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={denyDevice} modo='bateria'/>
-      <CardDeviceToAdd text={"Dispositivo conectado a energia encontrado: "} devices={energyDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={denyDevice} modo='energia'/>
-      <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria' submitFunction={includeBatteryDevice}></NewDeviceModal>
-      <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice}></NewDeviceModal>
+      <CardDeviceToAdd text={"Dispositivo a bateria encontrado: "} devices={batteryDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='bateria'/>
+      <CardDeviceToAdd text={"Dispositivo conectado a energia encontrado: "} devices={energyDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='energia'/>
+      <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria' submitFunction={includeBatteryDevice} device={deviceInModal}></NewDeviceModal>
+      <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice} device={deviceInModal}></NewDeviceModal>
     </div>
   );
 }
