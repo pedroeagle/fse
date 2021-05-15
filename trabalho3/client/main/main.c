@@ -1,84 +1,133 @@
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <stdio.h>
 #include <string.h>
-#include "nvs_flash.h"
-#include "esp_wifi.h"
+
+#include "dht.h"
+#include "driver/gpio.h"
 #include "esp_event.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
-#include "freertos/semphr.h"
-#include <stdio.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
 #include "esp_system.h"
+#include "esp_wifi.h"
 #include "freertos/event_groups.h"
-#include "esp_event.h"
-#include "nvs_flash.h"
-#include "esp_log.h"
-
-#include "dht.h"
-#include "wifi.h"
+#include "freertos/semphr.h"
 #include "mqtt.h"
+#include "nvs_flash.h"
+#include "wifi.h"
+
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle conexaoMQTTSemaphore;
 
-#define GPIO_DHT      ESP_DHT_GPIO_NUMBER
-#define GPIO_LED      ESP_LED_GPIO_NUMBER
-#define GPIO_BUTTON   ESP_BUTTON_GPIO_NUMBER
+#define GPIO_DHT CONFIG_ESP_DHT_GPIO_NUMBER
+#define GPIO_LED CONFIG_ESP_LED_GPIO_NUMBER
+#define GPIO_BUTTON CONFIG_ESP_BUTTON_GPIO_NUMBER
 
+xQueueHandle filaDeInterrupcao;
 
-gpio_num_t GPIO_SENSOR_NUM = GPIO_DHT;
-void conectadoWifi(void *params)
-{
-  while (true)
-  {
-    if (xSemaphoreTake(conexaoWifiSemaphore, portMAX_DELAY))
-    {
-      // Processamento Internet
-      mqtt_start();
-    }
-  }
+static void IRAM_ATTR gpio_isr_handler(void *args) {
+    int pino = (int)args;
+    xQueueSendFromISR(filaDeInterrupcao, &pino, NULL);
 }
 
-void trataComunicacaoComServidor(void *params)
-{
-  char mensagem[50], mensagemHum[50];
-  if (xSemaphoreTake(conexaoMQTTSemaphore, portMAX_DELAY))
-  {
-    while (true)
-    {
-      uint8_t mac;
-      esp_base_mac_addr_get(&mac);
-      float t, h;
-      dht_read_float_data(DHT_TYPE_DHT11, GPIO_SENSOR_NUM, &h, &t);
-      sprintf(mensagem, "temperatura1: %f", t);
-      sprintf(mensagemHum, "Umidade1: %f", h);
+void trataInterrupcaoBotao(void *params) {
+    int pino;
+    int contador = 0;
 
-      char path[100];
-      strcpy(path, "fse2020/160000840/dispositivos/");
-      itoa(mac, &path[strlen(path)], 10);
-      ESP_LOGI("A", "%d\n", mac);
-      mqtt_envia_mensagem(path, mensagem);
-      vTaskDelay(3000 / portTICK_PERIOD_MS);
-      mqtt_envia_mensagem(path, mensagemHum);
-      vTaskDelay(3000 / portTICK_PERIOD_MS);
+    while (true) {
+        if (xQueueReceive(filaDeInterrupcao, &pino, portMAX_DELAY)) {
+            // De-bouncing
+            int estado = gpio_get_level(pino);
+            if (estado == 1) {
+                gpio_isr_handler_remove(pino);
+                while (gpio_get_level(pino) == estado) {
+                    vTaskDelay(50 / portTICK_PERIOD_MS);
+                }
+
+                contador++;
+                printf("Os botões foram acionados %d vezes. Botão: %d\n",
+                       contador, pino);
+                gpio_set_level(GPIO_LED, contador % 2);
+
+                // Habilitar novamente a interrupção
+                vTaskDelay(50 / portTICK_PERIOD_MS);
+                gpio_isr_handler_add(pino, gpio_isr_handler, (void *)pino);
+            }
+        }
     }
-  }
 }
 
-void app_main()
-{
-  // Inicializa o NVS
-  esp_err_t ret = nvs_flash_init();
-  if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-  {
-    ESP_ERROR_CHECK(nvs_flash_erase());
-    ret = nvs_flash_init();
-  }
-  ESP_ERROR_CHECK(ret);
+void conectadoWifi(void *params) {
+    while (true) {
+        if (xSemaphoreTake(conexaoWifiSemaphore, portMAX_DELAY)) {
+            // Processamento Internet
+            mqtt_start();
+        }
+    }
+}
 
-  conexaoWifiSemaphore = xSemaphoreCreateBinary();
-  conexaoMQTTSemaphore = xSemaphoreCreateBinary();
-  wifi_start();
+void trataComunicacaoComServidor(void *params) {
+    char mensagem[50], mensagemHum[50];
+    if (xSemaphoreTake(conexaoMQTTSemaphore, portMAX_DELAY)) {
+        while (true) {
+            uint8_t mac;
+            esp_base_mac_addr_get(&mac);
+            float t, h;
+            dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &h, &t);
+            sprintf(mensagem, "temperatura1: %f", t);
+            sprintf(mensagemHum, "Umidade1: %f", h);
 
-  xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 4096, NULL, 1, NULL);
-  xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
+            char path[100];
+            strcpy(path, "fse2020/160000840/dispositivos/");
+            itoa(mac, &path[strlen(path)], 10);
+            ESP_LOGI("A", "%d\n", mac);
+            mqtt_envia_mensagem(path, mensagem);
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(path, mensagemHum);
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
+        }
+    }
+}
+
+void app_main() {
+    // Inicializa o NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
+        ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    conexaoWifiSemaphore = xSemaphoreCreateBinary();
+    conexaoMQTTSemaphore = xSemaphoreCreateBinary();
+    wifi_start();
+
+    // Configuração dos pinos dos LEDs
+    gpio_pad_select_gpio(GPIO_LED);
+    // Configura os pinos dos LEDs como Output
+    gpio_set_direction(GPIO_LED, GPIO_MODE_OUTPUT);
+
+    // Configuração do pino do Botão
+    gpio_pad_select_gpio(GPIO_BUTTON);
+    // Configura o pino do Botão como Entrada
+    gpio_set_direction(GPIO_BUTTON, GPIO_MODE_INPUT);
+    // Configura o resistor de Pulldown para o botão (por padrão a entrada
+    // estará em Zero)
+    gpio_pulldown_en(GPIO_BUTTON);
+    // Desabilita o resistor de Pull-up por segurança.
+    gpio_pullup_dis(GPIO_BUTTON);
+
+    // Configura pino para interrupção
+    gpio_set_intr_type(GPIO_BUTTON, GPIO_INTR_POSEDGE);
+
+    filaDeInterrupcao = xQueueCreate(10, sizeof(int));
+    xTaskCreate(trataInterrupcaoBotao, "TrataBotao", 2048, NULL, 1, NULL);
+
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add(GPIO_BUTTON, gpio_isr_handler, (void *)GPIO_BUTTON);
+
+    xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 4096, NULL, 1, NULL);
+    xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096,
+                NULL, 1, NULL);
 }
