@@ -1,14 +1,15 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../logo.svg';
 import * as mqtt from 'react-paho-mqtt';
 import env from "react-dotenv";
+import CardDeviceToAdd from './CardDeviceToAdd';
 
 function MQTT() {
   const [client, setClient] = useState(null);
   const [devices, setDevices] = useState([]);
   const [devicesToAdd, setDevicesToAdd] = useState([]);
   const [newDevicesHost, setNewDevicesHost] = useState('');
-  const topic = ["Hello"];
+  const topic = '';
   const options = {};
 
   useEffect(() => {
@@ -16,7 +17,7 @@ function MQTT() {
   }, [])
 
   const init = () => {
-    const c =  connectOnNewDevicesChannel();// mqtt.connect(host, port, clientId, onConnectionLost, onMessageArrived)
+    const c = connectOnNewDevicesChannel();// mqtt.connect(host, port, clientId, onConnectionLost, onMessageArrived)
     setClient(c);
     subscribeOnNewDevicesChannel(c);
   }
@@ -24,13 +25,10 @@ function MQTT() {
     const client = mqtt.connect("broker.emqx.io", Number(8083), "mqtt", onConnectionLost, onNewDeviceDetected);
     return client;
   }
-  const onNewDeviceDetected = (message)=>{
-    const {destinationName} = message;
+  const onNewDeviceDetected = (message) => {
+    const { destinationName } = message;
     const mac = destinationName.replace(/.*\//, "");
-    if(devicesToAdd.find((device)=>{return device===mac})===undefined){
-      console.log('Novo dispositivo detectado');
-      setDevicesToAdd(devicesToAdd => [...devicesToAdd, mac]);
-    }
+    setDevicesToAdd(devicesToAdd => (devicesToAdd.indexOf(mac) < 0) ? [...devicesToAdd, mac] : devicesToAdd);
   }
   const subscribeOnNewDevicesChannel = (client) => {
     const matricula = env.MATRICULA;
@@ -76,12 +74,16 @@ function MQTT() {
     client.disconnect();
   }
 
+  const addDevice = (e) => {
+    console.log(e);
+  }
+  const denyDevice = (e) => {
+    console.log(e);
+  }
 
   return (
     <div className="App">
-      {devicesToAdd.map((device, index)=>{
-        return(<p key={index}>{device}</p>);
-      })}
+      <CardDeviceToAdd devices={devicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={denyDevice} />
     </div>
   );
 }
