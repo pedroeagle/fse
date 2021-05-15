@@ -6,9 +6,9 @@ function CardDeviceToAdd({ devices, acceptDeviceFunction, denyDeviceFunction }){
     return (
         devices.map((device, index) => {
             return(
-            <Card key={index} value={device} >{device}
-            <Button value={device} onClick={acceptDeviceFunction}>Adicionar</Button>
-            <Button value={device} onClick={denyDeviceFunction}>Recusar</Button>
+            <Card key={index}>{device}
+            <Button onClick={(e)=>{acceptDeviceFunction(device)}}>Adicionar</Button>
+            <Button onClick={(e)=>{denyDeviceFunction(device)}}>Recusar</Button>
             </Card>);
         }));
 }
