@@ -36,12 +36,34 @@ void trataInterrupcaoBotao(void *params) {
 
     while (true) {
         if (xQueueReceive(filaDeInterrupcao, &pino, portMAX_DELAY)) {
-            // De-bouncing
             int estado = gpio_get_level(pino);
-            if (estado == 1) {
+            // if (estado == 1) {
+            //     gpio_isr_handler_remove(pino);
+            //     while (gpio_get_level(pino) == estado) {
+            //         vTaskDelay(50 / portTICK_PERIOD_MS);
+            //     }
+
+            //     contador++;
+            //     printf("Os botões foram acionados %d vezes. Botão: %d\n",
+            //            contador, pino);
+            //     gpio_set_level(GPIO_LED, contador % 2);
+
+            //     // Habilitar novamente a interrupção
+            //     vTaskDelay(50 / portTICK_PERIOD_MS);
+            //     gpio_isr_handler_add(pino, gpio_isr_handler, (void *)pino);
+            // }
+            if (estado == 0){
                 gpio_isr_handler_remove(pino);
+                int contadorPressionado = 0;
+                printf("Apertou o botão\n");
                 while (gpio_get_level(pino) == estado) {
                     vTaskDelay(50 / portTICK_PERIOD_MS);
+                    contadorPressionado++;
+                    printf("Manteve o botão pressionado: %d\n", contadorPressionado);
+                    if(contadorPressionado == 50){
+                        printf("Reseta ESP-32\n");
+                        break;
+                    }
                 }
 
                 contador++;
@@ -112,17 +134,22 @@ void app_main() {
     gpio_pad_select_gpio(GPIO_BUTTON);
     // Configura o pino do Botão como Entrada
     gpio_set_direction(GPIO_BUTTON, GPIO_MODE_INPUT);
-    // Configura o resistor de Pulldown para o botão (por padrão a entrada
-    // estará em Zero)
-    gpio_pulldown_en(GPIO_BUTTON);
-    // Desabilita o resistor de Pull-up por segurança.
-    gpio_pullup_dis(GPIO_BUTTON);
+    // Configura o resistor de Pull-up para o botão (por padrão a entrada
+    // estará em Um)
+    gpio_pullup_en(GPIO_BUTTON);
+    // Desabilita o resistor de Pull-down por segurança.
+    gpio_pulldown_dis(GPIO_BUTTON);
 
     // Configura pino para interrupção
-    gpio_set_intr_type(GPIO_BUTTON, GPIO_INTR_POSEDGE);
+    gpio_set_intr_type(GPIO_BUTTON, GPIO_INTR_NEGEDGE);
+
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    int estado = gpio_get_level(GPIO_BUTTON);
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    printf("Estado inicial: %d\n", estado);
 
     filaDeInterrupcao = xQueueCreate(10, sizeof(int));
-    xTaskCreate(trataInterrupcaoBotao, "TrataBotao", 2048, NULL, 1, NULL);
+    xTaskCreate(&trataInterrupcaoBotao, "TrataBotao", 2048, NULL, 1, NULL);
 
     gpio_install_isr_service(0);
     gpio_isr_handler_add(GPIO_BUTTON, gpio_isr_handler, (void *)GPIO_BUTTON);
