@@ -3,12 +3,16 @@ import logo from '../logo.svg';
 import * as mqtt from 'react-paho-mqtt';
 import env from "react-dotenv";
 import CardDeviceToAdd from './CardDeviceToAdd';
+import NewDeviceModal from './NewDeviceModal';
 
 function MQTT() {
   const [client, setClient] = useState(null);
   const [devices, setDevices] = useState([]);
-  const [devicesToAdd, setDevicesToAdd] = useState([]);
+  const [batteryDevicesToAdd, setBatteryDevicesToAdd] = useState([]);
+  const [energyDevicesToAdd, setEnergyDevicesToAdd] = useState([]);
   const [newDevicesHost, setNewDevicesHost] = useState('');
+  const [modalNewBatteryDeviceVisible, setModalNewBatteryDeviceVisible] = useState(false);
+  const [modalNewEnergyDeviceVisible, setModalNewEnergyDeviceVisible] = useState(false);
   const topic = '';
   const options = {};
 
@@ -25,10 +29,21 @@ function MQTT() {
     const client = mqtt.connect("broker.emqx.io", Number(8083), "mqtt", onConnectionLost, onNewDeviceDetected);
     return client;
   }
+  
   const onNewDeviceDetected = (message) => {
-    const { destinationName } = message;
+    const { destinationName, payloadString } = message;
+    console.log(message);
     const mac = destinationName.replace(/.*\//, "");
-    setDevicesToAdd(devicesToAdd => (devicesToAdd.indexOf(mac) < 0) ? [...devicesToAdd, mac] : devicesToAdd);
+    const {modo} = JSON.parse(payloadString);
+    switch(modo){
+      case 'bateria':
+        setBatteryDevicesToAdd(batteryDevicesToAdd => (batteryDevicesToAdd.indexOf(mac) < 0) ? [...batteryDevicesToAdd, mac] : batteryDevicesToAdd);
+        break;
+      case 'energia':
+        setEnergyDevicesToAdd(energyDevicesToAdd => (energyDevicesToAdd.indexOf(mac) < 0) ? [...energyDevicesToAdd, mac] : energyDevicesToAdd);
+        break;
+    }
+    
   }
   const subscribeOnNewDevicesChannel = (client) => {
     const matricula = env.MATRICULA;
@@ -74,16 +89,27 @@ function MQTT() {
     client.disconnect();
   }
 
-  const addDevice = (e) => {
-    console.log(e);
+  const addDevice = (device, modo) => {
+    console.log(device, modo);
+    switch (modo) {
+      case "energia":
+        setModalNewEnergyDeviceVisible(true);
+        break;
+      case "bateria":
+        setModalNewBatteryDeviceVisible(true);
+        break;
+    }
   }
-  const denyDevice = (e) => {
-    console.log(e);
+  const denyDevice = (device, modo) => {
+    console.log(device);
   }
 
   return (
     <div className="App">
-      <CardDeviceToAdd devices={devicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={denyDevice} />
+      <CardDeviceToAdd text={"Dispositivo a bateria encontrado: "} devices={batteryDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={denyDevice} modo='bateria'/>
+      <CardDeviceToAdd text={"Dispositivo conectado a energia encontrado: "} devices={energyDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={denyDevice} modo='energia'/>
+      <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria'></NewDeviceModal>
+      <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia'></NewDeviceModal>
     </div>
   );
 }
