@@ -7,7 +7,8 @@ import NewDeviceModal from './NewDeviceModal';
 
 function MQTT() {
   const [client, setClient] = useState(null);
-  const [devices, setDevices] = useState([]);
+  const [batteryDevices, setBatteryDevices] = useState([]);
+  const [energyDevices, setEnergyDevices] = useState([]);
   const [batteryDevicesToAdd, setBatteryDevicesToAdd] = useState([]);
   const [energyDevicesToAdd, setEnergyDevicesToAdd] = useState([]);
   const [newDevicesHost, setNewDevicesHost] = useState('');
@@ -104,12 +105,21 @@ function MQTT() {
     console.log(device);
   }
 
+  const includeBatteryDevice = (device)=>{
+    console.log(device);
+    setBatteryDevices(batteryDevices=> ([...batteryDevices, device]));
+  }
+  const includeEnergyDevice = (device)=>{
+    console.log(device);
+    setEnergyDevices(EnergyDevices=> ([...EnergyDevices, device]));
+  }
+
   return (
     <div className="App">
       <CardDeviceToAdd text={"Dispositivo a bateria encontrado: "} devices={batteryDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={denyDevice} modo='bateria'/>
       <CardDeviceToAdd text={"Dispositivo conectado a energia encontrado: "} devices={energyDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={denyDevice} modo='energia'/>
-      <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria'></NewDeviceModal>
-      <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia'></NewDeviceModal>
+      <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria' submitFunction={includeBatteryDevice}></NewDeviceModal>
+      <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice}></NewDeviceModal>
     </div>
   );
 }
