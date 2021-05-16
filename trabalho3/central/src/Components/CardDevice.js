@@ -2,33 +2,42 @@ import { Button, Card, Grid, List, ListItem, ListItemSecondaryAction, ListItemTe
 import "./CardDevice.css";
 import { useEffect, useState } from 'react';
 import * as mqtt from 'react-paho-mqtt';
-
+import { withStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
+const useStyles = makeStyles((theme) => ({
+    root: {
+      flexGrow: 1,
+    },
+    paper: {
+      padding: theme.spacing(2),
+      textAlign: 'center',
+      color: theme.palette.text.secondary,
+    },
+  }));
 function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo, remove }) {
     const subscribeToChannels = (comodo) => {
         subscribe(client, comodoHost.toString().replace('comodo', comodo));
     }
-    useEffect(()=>{
-        console.log(devices);
-    }, []);
+    const classes = useStyles();
     return (
-        <Grid container spacing={5} autoCorrect={true} className="grid" justify="flex-start" alignItems="flex-start">
+        <Grid container spacing={2} autoCorrect={true} className="grid" justify="flex-start" alignItems="flex-start">
             {devices.map((device, index) => {
                 subscribeToChannels(device.comodo);
                 return (
-                    <Grid item xs md={1} key={index} className="list">
+                    <Grid item md={2} key={index} className="list">
                         {console.log(devicesInfo)}
-                        <Card className="element">
-                            <Typography variant="h5">{device.comodo}</Typography>
+                        <Card className={modo=='energia'?'energyCard':'batteryCard'}>
+                            <Typography variant="h4">{device.comodo}</Typography>
                             <Typography variant="h6">Modo: {modo}</Typography>
-                            <Typography>{device.entrada} : {devicesInfo[device.comodo]?.estado?.entrada}</Typography>
+                            <Typography variant="h6">{device.entrada} : {devicesInfo[device.comodo]?.estado?.entrada}</Typography>
                             {modo === "energia" ?
                                 <>
-                                    <Typography >{device.saida} : {devicesInfo[device.comodo]?.estado?.saida}</Typography>
-                                    <Typography >Umidade: {devicesInfo[device.comodo]?.umidade}</Typography>
-                                    <Typography >Temperatura: {devicesInfo[device.comodo]?.temperatura}</Typography>
+                                    <Typography variant="h6">{device.saida} : {devicesInfo[device.comodo]?.estado?.saida}</Typography>
+                                    <Typography variant="h6" >Umidade: {devicesInfo[device.comodo]?.umidade}</Typography>
+                                    <Typography variant="h6" >Temperatura: {devicesInfo[device.comodo]?.temperatura}</Typography>
                                 </> : null}
-                            <Typography variant="h8">MAC: {device.device}</Typography>
-                            <Button onClick={(e)=>{remove(client, device, modo)}}>Remover dispositivo</Button>
+                            <Typography variant="h8">MAC: {device.device}</Typography><br/>
+                            <Button className="removeButton" onClick={(e)=>{remove(client, device, modo)}}>Remover dispositivo</Button>
                         </Card>
                     </Grid>
                 );
