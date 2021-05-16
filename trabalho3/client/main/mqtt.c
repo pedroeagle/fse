@@ -32,6 +32,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
+            esp_mqtt_client_publish(client, "fse2020/160000840/dispositivos/132", "Oi pedro eagle", 0, 1, 0);
             esp_mqtt_client_subscribe(client, "fse2020/160000840/dispositivos/132", 0);
             break;
         case MQTT_EVENT_DISCONNECTED:
@@ -69,7 +70,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 void mqtt_start()
 {
     esp_mqtt_client_config_t mqtt_config = {
-        .uri = "mqtt://test.mosquitto.org:1883",
+        .uri = "mqtt://broker.emqx.io:1883",
     };
     client = esp_mqtt_client_init(&mqtt_config);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, client);

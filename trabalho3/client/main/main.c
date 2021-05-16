@@ -98,8 +98,15 @@ void enviaDadosServidor(void *params) {
             dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
                                 &tempValue);
 
+            cJSON *resHumidity = cJSON_CreateObject();
+            cJSON *resTemperature = cJSON_CreateObject();
+
             humidity = cJSON_CreateNumber(humValue);
             temperature = cJSON_CreateNumber(tempValue);
+
+            cJSON_AddItemReferenceToObject(resHumidity, "humidity", humidity);
+            cJSON_AddItemReferenceToObject(resTemperature, "temperature", temperature);
+
 
             char pathHum[200], pathTemp[200];
 
@@ -110,15 +117,13 @@ void enviaDadosServidor(void *params) {
             strcat(pathTemp, "temperatura");
 
             printf("%s\n", pathHum);
-            printf("%s\n", cJSON_Print(humidity));
+            printf("%s\n", cJSON_Print(resHumidity));
             printf("%s\n", pathTemp);
-            printf("%s\n", cJSON_Print(temperature));
+            printf("%s\n", cJSON_Print(resTemperature));
 
-            
-
-            mqtt_envia_mensagem(pathHum, cJSON_Print(humidity));
+            mqtt_envia_mensagem(pathHum, cJSON_Print(resHumidity));
             vTaskDelay(50 / portTICK_PERIOD_MS);
-            mqtt_envia_mensagem(pathTemp, cJSON_Print(temperature));
+            mqtt_envia_mensagem(pathTemp, cJSON_Print(resTemperature));
             vTaskDelay(2000 / portTICK_PERIOD_MS);
         }
     }
