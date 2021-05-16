@@ -38,5 +38,18 @@ menu "Configuração GPIO"
         default 0
         help
             Configure o valor da porta que será conectada ao Botão na sua ESP.
-
 endmenu
+
+menu "Configuração Modo de Funcionamento"
+    config MODO_DE_FUNCIONAMENTO
+        choice
+            bool "Selecione uma Modo de Funcionamento da ESP"
+                default ENERGIA
+            config ENERGIA
+                bool "Habilitar o modo ENERGIA"
+            config BATERIA
+                bool "Habilitar o modo BATERIA (Low Power)"
+        endchoice  
+endmenu
+  
+

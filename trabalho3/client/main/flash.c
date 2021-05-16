@@ -23,6 +23,8 @@ int le_valor_nvs(char* var_name, char* ref_value) {
 
     if (res_nvs == ESP_ERR_NVS_NOT_FOUND) {
         ESP_LOGE("NVS", "Namespace: armazenamento, não encontrado");
+        nvs_close(particao_padrao_handle);
+        return -1;
     } else {
         // Lê tamanho do dado armazenado
         size_t required_size;
@@ -65,6 +67,63 @@ void grava_string_nvs(char* var_name, char* var_value) {
         ESP_LOGE("NVS", "Namespace: armazenamento, não encontrado");
     }
     esp_err_t res = nvs_set_str(particao_padrao_handle, var_name, var_value);
+    if (res != ESP_OK) {
+        ESP_LOGE("NVS", "Não foi possível escrever no NVS (%s)",
+                 esp_err_to_name(res));
+    }
+    nvs_commit(particao_padrao_handle);
+    nvs_close(particao_padrao_handle);
+}
+
+int32_t le_int32_nvs(char* var_name) {
+    // Inicia o acesso à partição personalizada
+    ESP_ERROR_CHECK(nvs_flash_init_partition("DadosNVS"));
+
+    int32_t valor = -1;
+    nvs_handle particao_padrao_handle;
+
+    // Abre o acesso à partição DadosNVS
+    esp_err_t res_nvs = nvs_open_from_partition(
+        "DadosNVS", "armazenamento", NVS_READONLY, &particao_padrao_handle);
+
+    if (res_nvs == ESP_ERR_NVS_NOT_FOUND) {
+        ESP_LOGE("NVS", "Namespace: armazenamento, não encontrado");
+    } else {
+        esp_err_t res = nvs_get_i32(particao_padrao_handle, var_name, &valor);
+
+        switch (res) {
+            case ESP_OK:
+                printf("Valor armazenado: %d\n", valor);
+                break;
+            case ESP_ERR_NOT_FOUND:
+                ESP_LOGE("NVS", "Valor não encontrado");
+                return -1;
+            default:
+                ESP_LOGE("NVS", "Erro ao acessar o NVS (%s)",
+                         esp_err_to_name(res));
+                return -1;
+                break;
+        }
+
+        nvs_close(particao_padrao_handle);
+    }
+    return valor;
+}
+
+void grava_int32_nvs(char* var_name, int32_t valor) {
+    // Inicia partição
+    ESP_ERROR_CHECK(nvs_flash_init_partition("DadosNVS"));
+
+    nvs_handle particao_padrao_handle;
+
+    // Abre partição para escrita
+    esp_err_t res_nvs = nvs_open_from_partition(
+        "DadosNVS", "armazenamento", NVS_READWRITE, &particao_padrao_handle);
+
+    if (res_nvs == ESP_ERR_NVS_NOT_FOUND) {
+        ESP_LOGE("NVS", "Namespace: armazenamento, não encontrado");
+    }
+    esp_err_t res = nvs_set_i32(particao_padrao_handle, var_name, valor);
     if (res != ESP_OK) {
         ESP_LOGE("NVS", "Não foi possível escrever no NVS (%s)",
                  esp_err_to_name(res));
