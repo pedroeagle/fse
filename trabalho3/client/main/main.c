@@ -117,10 +117,6 @@ void app_main() {
 
     grava_string_nvs("dispositivo/160000840/sala-de-jantar");
 
-    // nvs_handle particao_padrao_handle;
-    // ESP_ERROR_CHECK(nvs_open("storage", NVS_READONLY,
-    // &particao_padrao_handle));
-
     // Configuração dos pinos dos LEDs
     gpio_pad_select_gpio(GPIO_LED);
     // Configura os pinos dos LEDs como Output
@@ -134,13 +130,14 @@ void app_main() {
     // Configura o resistor de Pull-up para o botão (por padrão a entrada
     // estará em Um)
     gpio_pullup_en(GPIO_BUTTON);
+
     // Desabilita o resistor de Pull-down por segurança.
     gpio_pulldown_dis(GPIO_BUTTON);
 
     // Configura pino para interrupção
     gpio_set_intr_type(GPIO_BUTTON, GPIO_INTR_NEGEDGE);
 
-    // Inicializa semáfotos
+    // Inicializa semáforos
     conexaoWifiSemaphore = xSemaphoreCreateBinary();
     conexaoMQTTSemaphore = xSemaphoreCreateBinary();
 
