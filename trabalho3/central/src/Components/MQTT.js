@@ -57,10 +57,11 @@ function MQTT() {
       }
     }else{
       const [_, comodo, info] = destinationName.match(/.*\/(.*)\/(.*)/);
-      let infoObject = {};
-      infoObject[comodo] = devicesInfo[comodo]?devicesInfo[comodo]:{};
+      let infoObject = devicesInfo;
+      infoObject[comodo] = infoObject[comodo]?infoObject[comodo]:{};
       infoObject[comodo][info] = JSON.parse(payloadString)[info];
-      setDevicesInfo(devicesInfo=>devicesInfo[comodo]=infoObject);
+      setDevicesInfo({});
+      setDevicesInfo(infoObject);
     }
 
   }
