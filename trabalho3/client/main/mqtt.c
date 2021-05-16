@@ -23,19 +23,16 @@
 
 #define TAG "MQTT"
 
-extern xSemaphoreHandle conexaoMQTTSemaphore;
 esp_mqtt_client_handle_t client;
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 {
     esp_mqtt_client_handle_t client = event->client;
-    int msg_id;
     
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            xSemaphoreGive(conexaoMQTTSemaphore);
-            msg_id = esp_mqtt_client_subscribe(client, "fse2020/160000840/dispositivos/132", 0);
+            esp_mqtt_client_subscribe(client, "fse2020/160000840/dispositivos/132", 0);
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -53,8 +50,6 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
             const char *res = event->data;
             parse_json(res);
-            // printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            // printf("DATA=%.*s\r\n", event->data_len, event->data);
             break;
         case MQTT_EVENT_ERROR:
             ESP_LOGI(TAG, "MQTT_EVENT_ERROR");

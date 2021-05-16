@@ -10,7 +10,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 
-int le_valor_nvs(char* ref_value) {
+int le_valor_nvs(char* var_name, char* ref_value) {
     // Inicia o acesso à partição personalizada
     ESP_ERROR_CHECK(nvs_flash_init_partition("DadosNVS"));
 
@@ -26,17 +26,16 @@ int le_valor_nvs(char* ref_value) {
     } else {
         // Lê tamanho do dado armazenado
         size_t required_size;
-        nvs_get_str(particao_padrao_handle, "broker_path", NULL,
-                    &required_size);
+        nvs_get_str(particao_padrao_handle, var_name, NULL, &required_size);
 
         // Obtem variável
-        ref_value = malloc(required_size);
-        esp_err_t res = nvs_get_str(particao_padrao_handle, "broker_path",
-                                    ref_value, &required_size);
+        char* value = malloc(required_size);
+        esp_err_t res = nvs_get_str(particao_padrao_handle, var_name, value,
+                                    &required_size);
         switch (res) {
             case ESP_OK:
-                printf("Valor armazenado: %s\n", ref_value);
-                
+                strcpy(ref_value, value);
+                printf("Valor armazenado: %s\n", value);
                 break;
             case ESP_ERR_NOT_FOUND:
                 ESP_LOGE("NVS", "Valor não encontrado");
@@ -49,10 +48,10 @@ int le_valor_nvs(char* ref_value) {
         }
     }
     nvs_close(particao_padrao_handle);
-    return 0;
+    return 1;
 }
 
-void grava_string_nvs(char* broker_path) {
+void grava_string_nvs(char* var_name, char* var_value) {
     // Inicia partição
     ESP_ERROR_CHECK(nvs_flash_init_partition("DadosNVS"));
 
@@ -65,8 +64,7 @@ void grava_string_nvs(char* broker_path) {
     if (res_nvs == ESP_ERR_NVS_NOT_FOUND) {
         ESP_LOGE("NVS", "Namespace: armazenamento, não encontrado");
     }
-    esp_err_t res =
-        nvs_set_str(particao_padrao_handle, "broker_path", broker_path);
+    esp_err_t res = nvs_set_str(particao_padrao_handle, var_name, var_value);
     if (res != ESP_OK) {
         ESP_LOGE("NVS", "Não foi possível escrever no NVS (%s)",
                  esp_err_to_name(res));

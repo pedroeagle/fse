@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cJSON.h"
 #include "dht.h"
 #include "driver/gpio.h"
 #include "esp_event.h"
@@ -19,13 +20,15 @@
 #include "wifi.h"
 
 xSemaphoreHandle conexaoWifiSemaphore;
-xSemaphoreHandle conexaoMQTTSemaphore;
+xSemaphoreHandle sendDataMQTTSemaphore;
 
 #define GPIO_DHT CONFIG_ESP_DHT_GPIO_NUMBER
 #define GPIO_LED CONFIG_ESP_LED_GPIO_NUMBER
 #define GPIO_BUTTON CONFIG_ESP_BUTTON_GPIO_NUMBER
 
 xQueueHandle filaDeInterrupcao;
+cJSON *temperature = NULL;
+cJSON *humidity = NULL;
 
 static void IRAM_ATTR gpio_isr_handler(void *args) {
     int pino = (int)args;
@@ -59,8 +62,8 @@ void trataInterrupcaoBotao(void *params) {
                        contador, pino);
                 gpio_set_level(GPIO_LED, contador % 2);
 
-                char *valor_lido = "";
-                int result = le_valor_nvs(valor_lido);
+                char valor_lido[200];
+                int result = le_valor_nvs("comodo_path", valor_lido);
                 if (result > 0) {
                     printf("Valor que li: %s\n", valor_lido);
                 }
@@ -82,25 +85,41 @@ void conectadoWifi(void *params) {
     }
 }
 
-void trataComunicacaoComServidor(void *params) {
-    char mensagem[50], mensagemHum[50];
-    if (xSemaphoreTake(conexaoMQTTSemaphore, portMAX_DELAY)) {
-        while (true) {
-            uint8_t mac;
-            esp_base_mac_addr_get(&mac);
-            float t, h;
-            dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &h, &t);
-            sprintf(mensagem, "temperatura1: %f", t);
-            sprintf(mensagemHum, "Umidade1: %f", h);
+void enviaDadosServidor(void *params) {
+    if (xSemaphoreTake(sendDataMQTTSemaphore, portMAX_DELAY)) {
+        char comodo_path[200];
+        int result = le_valor_nvs("comodo_path", comodo_path);
+        if (result > 0) {
+            printf("valor lido da func: %s\n", comodo_path);
+        }
 
-            char path[100];
-            strcpy(path, "fse2020/160000840/dispositivos/");
-            itoa(mac, &path[strlen(path)], 10);
-            ESP_LOGI("A", "%d\n", mac);
-            mqtt_envia_mensagem(path, mensagem);
-            vTaskDelay(3000 / portTICK_PERIOD_MS);
-            mqtt_envia_mensagem(path, mensagemHum);
-            vTaskDelay(3000 / portTICK_PERIOD_MS);
+        while (true) {
+            float humValue, tempValue;
+            dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
+                                &tempValue);
+
+            humidity = cJSON_CreateNumber(humValue);
+            temperature = cJSON_CreateNumber(tempValue);
+
+            char pathHum[200], pathTemp[200];
+
+            strcpy(pathHum, comodo_path);
+            strcat(pathHum, "umidade");
+
+            strcpy(pathTemp, comodo_path);
+            strcat(pathTemp, "temperatura");
+
+            printf("%s\n", pathHum);
+            printf("%s\n", cJSON_Print(humidity));
+            printf("%s\n", pathTemp);
+            printf("%s\n", cJSON_Print(temperature));
+
+            
+
+            mqtt_envia_mensagem(pathHum, cJSON_Print(humidity));
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(pathTemp, cJSON_Print(temperature));
+            vTaskDelay(2000 / portTICK_PERIOD_MS);
         }
     }
 }
@@ -115,7 +134,13 @@ void app_main() {
     }
     ESP_ERROR_CHECK(ret);
 
-    grava_string_nvs("dispositivo/160000840/sala-de-jantar");
+    uint8_t mac;
+    esp_base_mac_addr_get(&mac);
+    char central_path[100];
+    strcpy(central_path, "fse2020/160000840/dispositivos/");
+    itoa(mac, &central_path[strlen(central_path)], 10);
+
+    grava_string_nvs("central_path", central_path);
 
     // Configuração dos pinos dos LEDs
     gpio_pad_select_gpio(GPIO_LED);
@@ -139,9 +164,9 @@ void app_main() {
 
     // Inicializa semáforos
     conexaoWifiSemaphore = xSemaphoreCreateBinary();
-    conexaoMQTTSemaphore = xSemaphoreCreateBinary();
+    sendDataMQTTSemaphore = xSemaphoreCreateBinary();
 
-    // Inicializa móduglo WI-FI
+    // Inicializa módulo WI-FI
     wifi_start();
 
     filaDeInterrupcao = xQueueCreate(10, sizeof(int));
@@ -151,6 +176,8 @@ void app_main() {
     gpio_isr_handler_add(GPIO_BUTTON, gpio_isr_handler, (void *)GPIO_BUTTON);
 
     xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 4096, NULL, 1, NULL);
-    xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096,
-                NULL, 1, NULL);
+    xTaskCreate(&enviaDadosServidor, "Envio de dados", 4096, NULL, 1, NULL);
+
+    // xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096,
+    //             NULL, 1, NULL);
 }
