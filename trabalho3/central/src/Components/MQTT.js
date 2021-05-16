@@ -36,7 +36,6 @@ function MQTT() {
 
   const onNewDeviceDetected = (message) => {
     const { destinationName, payloadString } = message;
-    console.log(message);
     const mac = destinationName.replace(/.*\//, "");
     const { modo } = JSON.parse(payloadString);
     switch (modo) {
@@ -124,10 +123,16 @@ function MQTT() {
     console.log(device);
     setBatteryDevices(batteryDevices => ([...batteryDevices, device]));
     removeDeviceFromAddList(device.device, "bateria");
+    const host = newDevicesHost.replace('+', device.device);
+    const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo.toLowerCase()}/`);
+    client.publish(host, JSON.stringify({esp_host}));
   }
   const includeEnergyDevice = (device) => {
     setEnergyDevices(EnergyDevices => ([...EnergyDevices, device]));
     removeDeviceFromAddList(device.device, "energia");
+    const host = newDevicesHost.replace('+', device.device);
+    const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo.toLowerCase()}/`);
+    client.publish(host, JSON.stringify({esp_host}));
   }
 
   return (
