@@ -1,0 +1,20 @@
+.list{
+    display: block;
+}
+.grid{
+    display: flex;
+    padding: 20px;
+}
+.element{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.energyCard{
+    background-color: cornflowerblue;
+}
+.batteryCard{
+    background-color: skyblue;
+}
+.removeButton:hover{
+    background-color: salmon;
+}

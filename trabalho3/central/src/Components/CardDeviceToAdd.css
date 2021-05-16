@@ -1,0 +1,9 @@
+.cardNewDeviceFound{
+    background-color:azure
+}
+.acceptButton:hover{
+    background-color: aquamarine;
+}
+.denyButton:hover{
+    background-color: salmon;
+}
