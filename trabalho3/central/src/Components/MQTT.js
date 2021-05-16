@@ -4,6 +4,7 @@ import * as mqtt from 'react-paho-mqtt';
 import env from "react-dotenv";
 import CardDeviceToAdd from './CardDeviceToAdd';
 import NewDeviceModal from './NewDeviceModal';
+import CardDevice from './CardDevice';
 
 function MQTT() {
   const [client, setClient] = useState(null);
@@ -32,21 +33,25 @@ function MQTT() {
     const client = mqtt.connect("broker.emqx.io", Number(8083), "mqtt", onConnectionLost, onNewDeviceDetected);
     return client;
   }
-  
+
   const onNewDeviceDetected = (message) => {
     const { destinationName, payloadString } = message;
     console.log(message);
     const mac = destinationName.replace(/.*\//, "");
-    const {modo} = JSON.parse(payloadString);
-    switch(modo){
+    const { modo } = JSON.parse(payloadString);
+    switch (modo) {
       case 'bateria':
-        setBatteryDevicesToAdd(batteryDevicesToAdd => (batteryDevicesToAdd.indexOf(mac) < 0) ? [...batteryDevicesToAdd, mac] : batteryDevicesToAdd);
+        setBatteryDevicesToAdd(batteryDevicesToAdd =>
+          batteryDevicesToAdd.indexOf(mac) < 0 ?
+            [...batteryDevicesToAdd, mac] : batteryDevicesToAdd);
         break;
       case 'energia':
-        setEnergyDevicesToAdd(energyDevicesToAdd => (energyDevicesToAdd.indexOf(mac) < 0) ? [...energyDevicesToAdd, mac] : energyDevicesToAdd);
+        setEnergyDevicesToAdd(energyDevicesToAdd =>
+          energyDevicesToAdd.indexOf(mac) < 0 ?
+            [...energyDevicesToAdd, mac] : energyDevicesToAdd);
         break;
     }
-    
+
   }
   const subscribeOnNewDevicesChannel = (client) => {
     const matricula = env.MATRICULA;
@@ -106,31 +111,34 @@ function MQTT() {
   const removeDeviceFromAddList = (device, modo) => {
     switch (modo) {
       case "bateria":
-        setBatteryDevicesToAdd(batteryDevicesToAdd.filter((item)=>item!=device));
+        setBatteryDevicesToAdd(batteryDevicesToAdd.filter((item) => item != device));
         break;
-    
+
       case "energia":
-        setEnergyDevicesToAdd(energyDevicesToAdd.filter((item)=>item!=device));
+        setEnergyDevicesToAdd(energyDevicesToAdd.filter((item) => item != device));
         break;
     }
   }
 
-  const includeBatteryDevice = (device)=>{
+  const includeBatteryDevice = (device) => {
     console.log(device);
-    setBatteryDevices(batteryDevices=> ([...batteryDevices, device]));
-    removeDeviceFromAddList(device, "bateria");
+    setBatteryDevices(batteryDevices => ([...batteryDevices, device]));
+    removeDeviceFromAddList(device.device, "bateria");
   }
-  const includeEnergyDevice = (device)=>{
-    setEnergyDevices(EnergyDevices=> ([...EnergyDevices, device]));
+  const includeEnergyDevice = (device) => {
+    setEnergyDevices(EnergyDevices => ([...EnergyDevices, device]));
     removeDeviceFromAddList(device.device, "energia");
   }
 
   return (
     <div className="App">
-      <CardDeviceToAdd text={"Dispositivo a bateria encontrado: "} devices={batteryDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='bateria'/>
-      <CardDeviceToAdd text={"Dispositivo conectado a energia encontrado: "} devices={energyDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='energia'/>
+      <CardDeviceToAdd text={"Dispositivo a bateria encontrado: "} devices={batteryDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='bateria' />
+      <CardDeviceToAdd text={"Dispositivo conectado a energia encontrado: "} devices={energyDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='energia' />
       <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria' submitFunction={includeBatteryDevice} device={deviceInModal}></NewDeviceModal>
       <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice} device={deviceInModal}></NewDeviceModal>
+      <h2>Dispositivos conectados</h2>
+      <CardDevice devices={batteryDevices} modo="bateria" />
+      <CardDevice devices={energyDevices} modo="energia" />
     </div>
   );
 }

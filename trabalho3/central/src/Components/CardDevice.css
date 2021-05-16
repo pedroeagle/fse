@@ -1,0 +1,11 @@
+.list{
+    display: flex;
+}
+.grid{
+    display: flex;
+    padding: 20px;
+}
+.element{
+    padding-left: 10px;
+    padding-right: 10px;
+}
