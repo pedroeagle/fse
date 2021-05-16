@@ -3,10 +3,13 @@ import "./CardDevice.css";
 import { useEffect, useState } from 'react';
 import * as mqtt from 'react-paho-mqtt';
 
-function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo }) {
+function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo, remove }) {
     const subscribeToChannels = (comodo) => {
         subscribe(client, comodoHost.toString().replace('comodo', comodo));
     }
+    useEffect(()=>{
+        console.log(devices);
+    }, []);
     return (
         <Grid container spacing={5} autoCorrect={true} className="grid" justify="flex-start" alignItems="flex-start">
             {devices.map((device, index) => {
@@ -25,7 +28,7 @@ function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo 
                                     <Typography >Temperatura: {devicesInfo[device.comodo]?.temperatura}</Typography>
                                 </> : null}
                             <Typography variant="h8">MAC: {device.device}</Typography>
-                            <Button onClick={(e)=>{console.log(e)}}>Remover dispositivo</Button>
+                            <Button onClick={(e)=>{remove(client, device, modo)}}>Remover dispositivo</Button>
                         </Card>
                     </Grid>
                 );

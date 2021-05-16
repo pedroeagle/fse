@@ -113,7 +113,16 @@ function MQTT() {
   const onDisconnect = () => {
     client.disconnect();
   }
-
+  const removeDevice = (client, device, modo)=>{
+    console.log(device, modo);
+    removeDeviceFromList(device.device, modo);
+    let infoObject = devicesInfo;
+    infoObject[device.comodo] = {};
+    setDevicesInfo({});
+    setDevicesInfo(infoObject);
+    const host = newDevicesHost.replace('+', device.device);
+    client.publish(host, JSON.stringify({message: 'removido'}));
+  }
   const addDevice = (device, modo) => {
     switch (modo) {
       case "energia":
@@ -133,6 +142,17 @@ function MQTT() {
 
       case "energia":
         setEnergyDevicesToAdd(energyDevicesToAdd.filter((item) => item != device));
+        break;
+    }
+  }
+  const removeDeviceFromList = (device, modo) => {
+    switch (modo) {
+      case "bateria":
+        setBatteryDevices(batteryDevices.filter((item) => item.device != device));
+        break;
+
+      case "energia":
+        setEnergyDevices(energyDevices.filter((item) =>  item.device != device));
         break;
     }
   }
@@ -165,8 +185,8 @@ function MQTT() {
       <>
       {(batteryDevices.length === 0 && energyDevices.length === 0)?<p>Não há dispositivos conectados</p>:''}
       </>
-      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo}/>
-      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo}/>
+      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice}/>
+      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice}/>
     </div>
   );
 }
