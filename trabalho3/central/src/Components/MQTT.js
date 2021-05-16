@@ -13,50 +13,65 @@ function MQTT() {
   const [batteryDevicesToAdd, setBatteryDevicesToAdd] = useState([]);
   const [energyDevicesToAdd, setEnergyDevicesToAdd] = useState([]);
   const [newDevicesHost, setNewDevicesHost] = useState('');
+  const [comodoHost, setComodoHost] = useState('');
   const [modalNewBatteryDeviceVisible, setModalNewBatteryDeviceVisible] = useState(false);
   const [modalNewEnergyDeviceVisible, setModalNewEnergyDeviceVisible] = useState(false);
   const [deviceInModal, setDeviceInModal] = useState('');
+  const [devicesInfo, setDevicesInfo] = useState({});
 
   const topic = '';
   const options = {};
 
   useEffect(() => {
-    init();
+    const c = init();
+    setClient(c);
   }, [])
 
   const init = () => {
     const c = connectOnNewDevicesChannel();// mqtt.connect(host, port, clientId, onConnectionLost, onMessageArrived)
     setClient(c);
     subscribeOnNewDevicesChannel(c);
+    return c;
   }
   const connectOnNewDevicesChannel = () => {
-    const client = mqtt.connect("broker.emqx.io", Number(8083), "mqtt", onConnectionLost, onNewDeviceDetected);
+    const client = mqtt.connect("broker.emqx.io", Number(8083), "mqtt", onConnectionLost, onMessageReceived);
     return client;
   }
 
-  const onNewDeviceDetected = (message) => {
+  const onMessageReceived = (message) => {
     const { destinationName, payloadString } = message;
-    const mac = destinationName.replace(/.*\//, "");
-    const { modo } = JSON.parse(payloadString);
-    switch (modo) {
-      case 'bateria':
-        setBatteryDevicesToAdd(batteryDevicesToAdd =>
-          batteryDevicesToAdd.indexOf(mac) < 0 ?
-            [...batteryDevicesToAdd, mac] : batteryDevicesToAdd);
-        break;
-      case 'energia':
-        setEnergyDevicesToAdd(energyDevicesToAdd =>
-          energyDevicesToAdd.indexOf(mac) < 0 ?
-            [...energyDevicesToAdd, mac] : energyDevicesToAdd);
-        break;
+    if(destinationName.indexOf('dispositivos')>=0){
+      const mac = destinationName.replace(/.*\//, "");
+      const { modo } = JSON.parse(payloadString);
+      switch (modo) {
+        case 'bateria':
+          setBatteryDevicesToAdd(batteryDevicesToAdd =>
+            batteryDevicesToAdd.indexOf(mac) < 0 ?
+              [...batteryDevicesToAdd, mac] : batteryDevicesToAdd);
+          break;
+        case 'energia':
+          setEnergyDevicesToAdd(energyDevicesToAdd =>
+            energyDevicesToAdd.indexOf(mac) < 0 ?
+              [...energyDevicesToAdd, mac] : energyDevicesToAdd);
+          break;
+      }
+    }else{
+      const [_, comodo, info] = destinationName.match(/.*\/(.*)\/(.*)/);
+      let infoObject = devicesInfo;
+      infoObject[comodo] = infoObject[comodo]?infoObject[comodo]:{};
+      infoObject[comodo][info] = JSON.parse(payloadString)[info];
+      setDevicesInfo({});
+      setDevicesInfo(infoObject);
     }
 
   }
   const subscribeOnNewDevicesChannel = (client) => {
     const matricula = env.MATRICULA;
     const host = `fse2020/${matricula}/dispositivos/+`;
+    setComodoHost(`fse2020/${matricula}/comodo/+`);
     setNewDevicesHost(host);
     subscribeWithClient(client, host);
+    return client;
   }
   const sendPayload = () => {
     const payload = mqtt.parsePayload("Hello", "World"); // topic, payload
@@ -83,6 +98,9 @@ function MQTT() {
       }
     }); // called when the client connects
   }
+  const subscribeAlreadyConnected = (client, topic, options) => {
+      client.subscribe(topic, options);
+  }
 
   // called when subscribing topic(s)
   const onUnsubscribe = () => {
@@ -95,7 +113,16 @@ function MQTT() {
   const onDisconnect = () => {
     client.disconnect();
   }
-
+  const removeDevice = (client, device, modo)=>{
+    console.log(device, modo);
+    removeDeviceFromList(device.device, modo);
+    let infoObject = devicesInfo;
+    infoObject[device.comodo] = {};
+    setDevicesInfo({});
+    setDevicesInfo(infoObject);
+    const host = newDevicesHost.replace('+', device.device);
+    client.publish(host, JSON.stringify({message: 'removido'}));
+  }
   const addDevice = (device, modo) => {
     switch (modo) {
       case "energia":
@@ -118,6 +145,17 @@ function MQTT() {
         break;
     }
   }
+  const removeDeviceFromList = (device, modo) => {
+    switch (modo) {
+      case "bateria":
+        setBatteryDevices(batteryDevices.filter((item) => item.device != device));
+        break;
+
+      case "energia":
+        setEnergyDevices(energyDevices.filter((item) =>  item.device != device));
+        break;
+    }
+  }
 
   const includeBatteryDevice = (device) => {
     console.log(device);
@@ -125,6 +163,7 @@ function MQTT() {
     removeDeviceFromAddList(device.device, "bateria");
     const host = newDevicesHost.replace('+', device.device);
     const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo.toLowerCase()}/`);
+    console.log(host);
     client.publish(host, JSON.stringify({esp_host}));
   }
   const includeEnergyDevice = (device) => {
@@ -132,6 +171,7 @@ function MQTT() {
     removeDeviceFromAddList(device.device, "energia");
     const host = newDevicesHost.replace('+', device.device);
     const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo.toLowerCase()}/`);
+    console.log(host)
     client.publish(host, JSON.stringify({esp_host}));
   }
 
@@ -141,9 +181,12 @@ function MQTT() {
       <CardDeviceToAdd text={"Dispositivo conectado a energia encontrado: "} devices={energyDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='energia' />
       <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria' submitFunction={includeBatteryDevice} device={deviceInModal}></NewDeviceModal>
       <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice} device={deviceInModal}></NewDeviceModal>
-      <h2>Dispositivos conectados</h2>
-      <CardDevice devices={batteryDevices} modo="bateria" />
-      <CardDevice devices={energyDevices} modo="energia" />
+      <h2>Central de controle</h2>
+      <>
+      {(batteryDevices.length === 0 && energyDevices.length === 0)?<p>Não há dispositivos conectados</p>:''}
+      </>
+      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice}/>
+      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice}/>
     </div>
   );
 }
