@@ -1,4 +1,4 @@
-import { Card, Grid, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from "@material-ui/core";
+import { Button, Card, Grid, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from "@material-ui/core";
 import "./CardDevice.css";
 import { useEffect, useState } from 'react';
 import * as mqtt from 'react-paho-mqtt';
@@ -25,6 +25,7 @@ function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo 
                                     <Typography >Temperatura: {devicesInfo[device.comodo]?.temperatura}</Typography>
                                 </> : null}
                             <Typography variant="h8">MAC: {device.device}</Typography>
+                            <Button onClick={(e)=>{console.log(e)}}>Remover dispositivo</Button>
                         </Card>
                     </Grid>
                 );
