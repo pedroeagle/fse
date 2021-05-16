@@ -10,9 +10,11 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
+#include "flash.h"
 #include "freertos/event_groups.h"
 #include "freertos/semphr.h"
 #include "mqtt.h"
+#include "nvs.h"
 #include "nvs_flash.h"
 #include "wifi.h"
 
@@ -37,30 +39,16 @@ void trataInterrupcaoBotao(void *params) {
     while (true) {
         if (xQueueReceive(filaDeInterrupcao, &pino, portMAX_DELAY)) {
             int estado = gpio_get_level(pino);
-            // if (estado == 1) {
-            //     gpio_isr_handler_remove(pino);
-            //     while (gpio_get_level(pino) == estado) {
-            //         vTaskDelay(50 / portTICK_PERIOD_MS);
-            //     }
-
-            //     contador++;
-            //     printf("Os botões foram acionados %d vezes. Botão: %d\n",
-            //            contador, pino);
-            //     gpio_set_level(GPIO_LED, contador % 2);
-
-            //     // Habilitar novamente a interrupção
-            //     vTaskDelay(50 / portTICK_PERIOD_MS);
-            //     gpio_isr_handler_add(pino, gpio_isr_handler, (void *)pino);
-            // }
-            if (estado == 0){
+            if (estado == 0) {
                 gpio_isr_handler_remove(pino);
                 int contadorPressionado = 0;
                 printf("Apertou o botão\n");
                 while (gpio_get_level(pino) == estado) {
                     vTaskDelay(50 / portTICK_PERIOD_MS);
                     contadorPressionado++;
-                    printf("Manteve o botão pressionado: %d\n", contadorPressionado);
-                    if(contadorPressionado == 50){
+                    printf("Manteve o botão pressionado: %d\n",
+                           contadorPressionado);
+                    if (contadorPressionado == 50) {
                         printf("Reseta ESP-32\n");
                         break;
                     }
@@ -70,6 +58,12 @@ void trataInterrupcaoBotao(void *params) {
                 printf("Os botões foram acionados %d vezes. Botão: %d\n",
                        contador, pino);
                 gpio_set_level(GPIO_LED, contador % 2);
+
+                char *valor_lido = "";
+                int result = le_valor_nvs(valor_lido);
+                if (result > 0) {
+                    printf("Valor que li: %s\n", valor_lido);
+                }
 
                 // Habilitar novamente a interrupção
                 vTaskDelay(50 / portTICK_PERIOD_MS);
@@ -121,9 +115,11 @@ void app_main() {
     }
     ESP_ERROR_CHECK(ret);
 
-    conexaoWifiSemaphore = xSemaphoreCreateBinary();
-    conexaoMQTTSemaphore = xSemaphoreCreateBinary();
-    wifi_start();
+    grava_string_nvs("dispositivo/160000840/sala-de-jantar");
+
+    // nvs_handle particao_padrao_handle;
+    // ESP_ERROR_CHECK(nvs_open("storage", NVS_READONLY,
+    // &particao_padrao_handle));
 
     // Configuração dos pinos dos LEDs
     gpio_pad_select_gpio(GPIO_LED);
@@ -134,6 +130,7 @@ void app_main() {
     gpio_pad_select_gpio(GPIO_BUTTON);
     // Configura o pino do Botão como Entrada
     gpio_set_direction(GPIO_BUTTON, GPIO_MODE_INPUT);
+
     // Configura o resistor de Pull-up para o botão (por padrão a entrada
     // estará em Um)
     gpio_pullup_en(GPIO_BUTTON);
@@ -143,10 +140,12 @@ void app_main() {
     // Configura pino para interrupção
     gpio_set_intr_type(GPIO_BUTTON, GPIO_INTR_NEGEDGE);
 
-    vTaskDelay(3000 / portTICK_PERIOD_MS);
-    int estado = gpio_get_level(GPIO_BUTTON);
-    vTaskDelay(3000 / portTICK_PERIOD_MS);
-    printf("Estado inicial: %d\n", estado);
+    // Inicializa semáfotos
+    conexaoWifiSemaphore = xSemaphoreCreateBinary();
+    conexaoMQTTSemaphore = xSemaphoreCreateBinary();
+
+    // Inicializa móduglo WI-FI
+    wifi_start();
 
     filaDeInterrupcao = xQueueCreate(10, sizeof(int));
     xTaskCreate(&trataInterrupcaoBotao, "TrataBotao", 2048, NULL, 1, NULL);
