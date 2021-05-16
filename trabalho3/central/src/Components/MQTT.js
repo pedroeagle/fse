@@ -17,10 +17,7 @@ function MQTT() {
   const [modalNewBatteryDeviceVisible, setModalNewBatteryDeviceVisible] = useState(false);
   const [modalNewEnergyDeviceVisible, setModalNewEnergyDeviceVisible] = useState(false);
   const [deviceInModal, setDeviceInModal] = useState('');
-  const [humidades, setHumidades] = useState({});
-  const [temperaturas, setTemperaturas] = useState({});
-  const [entradas, setEntradas] = useState({});
-  const [saidas, setSaidas] = useState({});
+  const [devicesInfo, setDevicesInfo] = useState({});
 
   const topic = '';
   const options = {};
@@ -59,9 +56,11 @@ function MQTT() {
           break;
       }
     }else{
-      console.log(destinationName);
-      console.log(message);
-
+      const [_, comodo, info] = destinationName.match(/.*\/(.*)\/(.*)/);
+      let infoObject = {};
+      infoObject[comodo] = devicesInfo[comodo]?devicesInfo[comodo]:{};
+      infoObject[comodo][info] = JSON.parse(payloadString)[info];
+      setDevicesInfo(devicesInfo=>devicesInfo[comodo]=infoObject);
     }
 
   }
@@ -162,8 +161,8 @@ function MQTT() {
       <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria' submitFunction={includeBatteryDevice} device={deviceInModal}></NewDeviceModal>
       <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice} device={deviceInModal}></NewDeviceModal>
       <h2>Dispositivos conectados</h2>
-      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected}/>
-      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected}/>
+      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo}/>
+      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo}/>
     </div>
   );
 }
