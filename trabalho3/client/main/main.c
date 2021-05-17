@@ -36,6 +36,43 @@ static void IRAM_ATTR gpio_isr_handler(void *args) {
     xQueueSendFromISR(filaDeInterrupcao, &pino, NULL);
 }
 
+void enviaEstadosCentral() {
+    cJSON *estado_json = cJSON_CreateObject();
+
+    cJSON *entrada_json;
+    int32_t estado_entrada = le_int32_nvs("estado_entrada");
+    if (estado_entrada) {
+        entrada_json = cJSON_CreateTrue();
+    } else {
+        entrada_json = cJSON_CreateFalse();
+    }
+    cJSON_AddItemReferenceToObject(estado_json, "entrada", entrada_json);
+
+#ifdef CONFIG_ENERGIA
+    cJSON *saida_json = cJSON_CreateFalse();
+    int32_t estado_saida = le_int32_nvs("estado_saida");
+    if (estado_saida) {
+        saida_json = cJSON_CreateTrue();
+    } else {
+        saida_json = cJSON_CreateFalse();
+    }
+    cJSON_AddItemReferenceToObject(estado_json, "saida", saida_json);
+#endif
+
+    cJSON *res_estado = cJSON_CreateObject();
+    cJSON_AddItemReferenceToObject(res_estado, "estado", estado_json);
+    mqtt_envia_mensagem(state_path, cJSON_Print(res_estado));
+    cJSON_Delete(res_estado);
+}
+
+int32_t le_estado_saida() {
+#ifdef CONFIG_BATERIA
+    return NULL;
+#endif
+    int32_t estado_saida = le_int32_nvs("estado_saida");
+    return estado_saida;
+}
+
 void trataInterrupcaoBotao(void *params) {
     int pino;
     int contador = 0;
@@ -53,44 +90,21 @@ void trataInterrupcaoBotao(void *params) {
                     printf("Manteve o botão pressionado: %d\n",
                            contadorPressionado);
                     if (contadorPressionado == 50) {
-                        printf("Reseta ESP-32\n");
+                        nvs_flash_erase_partition("DadosNVS");
+                        esp_restart();
                         break;
                     }
                 }
 
                 contador++;
-                printf("Os botões foram acionados %d vezes. Botão: %d\n",
-                       contador, pino);
-                gpio_set_level(GPIO_LED, contador % 2);
+                printf("O botão foi acionado %d vezes. Botão: %d\n", contador,
+                       pino);
 
                 int32_t estado_entrada = le_int32_nvs("estado_entrada");
-                if (estado_entrada == -1) {
-                    estado_entrada = 0;
-                    grava_int32_nvs("estado_entrada", estado_entrada);
-                } else {
-                    estado_entrada = estado_entrada ? 0 : 1;
-                    grava_int32_nvs("estado_entrada", estado_entrada);
-                }
+                estado_entrada = estado_entrada ? 0 : 1;
+                grava_int32_nvs("estado_entrada", estado_entrada);
 
-                cJSON *entrada_json;
-                if (estado_entrada) {
-                    entrada_json = cJSON_CreateTrue();
-                } else {
-                    entrada_json = cJSON_CreateFalse();
-                }
-                cJSON *saida_json = cJSON_CreateFalse();
-                cJSON *estado_json = cJSON_CreateObject();
-                cJSON_AddItemReferenceToObject(estado_json, "entrada",
-                                               entrada_json);
-                cJSON_AddItemReferenceToObject(estado_json, "saida",
-                                               saida_json);
-
-                cJSON *res_estado = cJSON_CreateObject();
-                cJSON_AddItemReferenceToObject(res_estado, "estado",
-                                               estado_json);
-
-                mqtt_envia_mensagem(state_path, cJSON_Print(res_estado));
-                cJSON_Delete(res_estado);
+                enviaEstadosCentral();
 
                 // Habilitar novamente a interrupção
                 vTaskDelay(50 / portTICK_PERIOD_MS);
@@ -135,8 +149,10 @@ void enviaDadosServidor(void *params) {
     if (xSemaphoreTake(sendDataMQTTSemaphore, portMAX_DELAY)) {
         // Define os paths
         definePaths();
+        enviaEstadosCentral();
 
-        // Loop da task
+// Loop da task
+#ifdef CONFIG_ENERGIA
         while (true) {
             float humValue, tempValue;
             dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
@@ -160,10 +176,12 @@ void enviaDadosServidor(void *params) {
             cJSON_Delete(resHumidity);
             cJSON_Delete(resTemperature);
         }
+#endif
     }
 }
 
 void configuraGPIO() {
+#ifdef CONFIG_ENERGIA
     // Configuração dos pinos dos LEDs
     gpio_pad_select_gpio(GPIO_LED);
     // Configura os pinos dos LEDs como Output
@@ -173,6 +191,10 @@ void configuraGPIO() {
     gpio_pad_select_gpio(GPIO_BUTTON);
     // Configura o pino do Botão como Entrada
     gpio_set_direction(GPIO_BUTTON, GPIO_MODE_INPUT);
+
+    int32_t estado_saida = le_int32_nvs("estado_saida");
+    gpio_set_level(GPIO_LED, estado_saida);
+#endif
 
     // Configura o resistor de Pull-up para o botão (por padrão a entrada
     // estará em Um)
@@ -195,6 +217,22 @@ void defineCentralPath() {
     grava_string_nvs("central_path", central_path);
 }
 
+void defineVariaveisEstado() {
+    int32_t estado_entrada = le_int32_nvs("estado_entrada");
+    if (estado_entrada == -1) {
+        estado_entrada = 0;
+        grava_int32_nvs("estado_entrada", estado_entrada);
+    }
+
+#ifdef CONFIG_ENERGIA
+    int32_t estado_saida = le_int32_nvs("estado_saida");
+    if (estado_saida == -1) {
+        estado_saida = 0;
+        grava_int32_nvs("estado_saida", estado_saida);
+    }
+#endif
+}
+
 void app_main() {
     // Inicializa o NVS
     esp_err_t ret = nvs_flash_init();
@@ -208,6 +246,7 @@ void app_main() {
     int result = le_valor_nvs("central_path", central_path);
     if (result == -1) {
         defineCentralPath();
+        defineVariaveisEstado();
     } else {
         printf("Path central: %s\n", central_path);
         flag_run = 1;
@@ -231,8 +270,7 @@ void app_main() {
 
     xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 4096, NULL, 1, NULL);
     xTaskCreate(&enviaDadosServidor, "Envio de dados", 4096, NULL, 1, NULL);
-
-    if(flag_run){
+    if (flag_run) {
         xSemaphoreGive(sendDataMQTTSemaphore);
     }
 }
