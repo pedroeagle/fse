@@ -17,8 +17,8 @@
 #include "mqtt.h"
 #include "nvs.h"
 #include "nvs_flash.h"
-#include "wifi.h"
 #include "send.h"
+#include "wifi.h"
 
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle sendDataMQTTSemaphore;
@@ -39,7 +39,7 @@ static void IRAM_ATTR gpio_isr_handler(void *args) {
 
 int32_t le_estado_saida() {
 #ifdef CONFIG_BATERIA
-    return NULL;
+    return 0;
 #endif
     int32_t estado_saida = le_int32_nvs("estado_saida");
     return estado_saida;
@@ -123,9 +123,9 @@ void enviaDadosServidor(void *params) {
         definePaths();
         enviaEstadosCentral();
 
-// Loop da task
-#ifdef CONFIG_ENERGIA
+        // Loop da task
         while (true) {
+#ifdef CONFIG_ENERGIA
             float humValue, tempValue;
             dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
                                 &tempValue);
@@ -147,8 +147,8 @@ void enviaDadosServidor(void *params) {
 
             cJSON_Delete(resHumidity);
             cJSON_Delete(resTemperature);
-        }
 #endif
+        }
     }
 }
 
