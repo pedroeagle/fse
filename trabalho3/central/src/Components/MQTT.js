@@ -5,6 +5,8 @@ import env from "react-dotenv";
 import CardDeviceToAdd from './CardDeviceToAdd';
 import NewDeviceModal from './NewDeviceModal';
 import CardDevice from './CardDevice';
+import CSV from './CSV';
+import { Switch, Typography } from '@material-ui/core';
 
 function MQTT() {
   const [client, setClient] = useState(null);
@@ -18,6 +20,8 @@ function MQTT() {
   const [modalNewEnergyDeviceVisible, setModalNewEnergyDeviceVisible] = useState(false);
   const [deviceInModal, setDeviceInModal] = useState('');
   const [devicesInfo, setDevicesInfo] = useState({});
+  const [logs, setLogs] = useState([]);
+  const [activateAlarm, setActivateAlarm] = useState(false);
 
   const topic = '';
   const options = {};
@@ -40,7 +44,7 @@ function MQTT() {
 
   const onMessageReceived = (message) => {
     const { destinationName, payloadString } = message;
-    if(destinationName.indexOf('dispositivos')>=0){
+    if (destinationName.indexOf('dispositivos') >= 0) {
       const mac = destinationName.replace(/.*\//, "");
       const { modo } = JSON.parse(payloadString);
       switch (modo) {
@@ -55,10 +59,10 @@ function MQTT() {
               [...energyDevicesToAdd, mac] : energyDevicesToAdd);
           break;
       }
-    }else{
+    } else {
       const [_, comodo, info] = destinationName.match(/.*\/(.*)\/(.*)/);
       let infoObject = devicesInfo;
-      infoObject[comodo] = infoObject[comodo]?infoObject[comodo]:{};
+      infoObject[comodo] = infoObject[comodo] ? infoObject[comodo] : {};
       infoObject[comodo][info] = JSON.parse(payloadString)[info];
       setDevicesInfo({});
       setDevicesInfo(infoObject);
@@ -99,7 +103,7 @@ function MQTT() {
     }); // called when the client connects
   }
   const subscribeAlreadyConnected = (client, topic, options) => {
-      client.subscribe(topic, options);
+    client.subscribe(topic, options);
   }
 
   // called when subscribing topic(s)
@@ -113,7 +117,7 @@ function MQTT() {
   const onDisconnect = () => {
     client.disconnect();
   }
-  const removeDevice = (client, device, modo)=>{
+  const removeDevice = (client, device, modo) => {
     console.log(device, modo);
     removeDeviceFromList(device.device, modo);
     let infoObject = devicesInfo;
@@ -121,7 +125,7 @@ function MQTT() {
     setDevicesInfo({});
     setDevicesInfo(infoObject);
     const host = newDevicesHost.replace('+', device.device);
-    client.publish(host, JSON.stringify({message: 'removido'}));
+    client.publish(host, JSON.stringify({ message: 'removido' }));
   }
   const addDevice = (device, modo) => {
     switch (modo) {
@@ -152,7 +156,7 @@ function MQTT() {
         break;
 
       case "energia":
-        setEnergyDevices(energyDevices.filter((item) =>  item.device !== device));
+        setEnergyDevices(energyDevices.filter((item) => item.device !== device));
         break;
     }
   }
@@ -164,7 +168,7 @@ function MQTT() {
     const host = newDevicesHost.replace('+', device.device);
     const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo.toLowerCase()}/`);
     console.log(host);
-    client.publish(host, JSON.stringify({esp_host}));
+    client.publish(host, JSON.stringify({ esp_host }));
   }
   const includeEnergyDevice = (device) => {
     setEnergyDevices(EnergyDevices => ([...EnergyDevices, device]));
@@ -172,11 +176,22 @@ function MQTT() {
     const host = newDevicesHost.replace('+', device.device);
     const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo.toLowerCase()}/`);
     console.log(host)
-    client.publish(host, JSON.stringify({esp_host}));
+    client.publish(host, JSON.stringify({ esp_host }));
   }
-  const toggleDevice = (device) =>{
+  const toggleDevice = (device, info) => {
     const host = newDevicesHost.replace('+', device);
-    client.publish(host, JSON.stringify({message: 'toggle'}));
+    client.publish(host, JSON.stringify({ message: 'toggle' }));
+    const event = info.estado?.saida ? "desligar" : "ligar";
+    let newLogs = logs;
+    newLogs.push({ "evento": event, "dispositivo": device, "horario": new Date().toLocaleString() });
+    setLogs(newLogs);
+    console.log(logs);
+  }
+  const toggleAlarm = ()=>{
+    setActivateAlarm(!activateAlarm);
+    let newLogs = logs;
+    newLogs.push({ "evento": activateAlarm?"ativar":"desativar", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
+    setLogs(newLogs);
   }
   return (
     <div className="App">
@@ -185,11 +200,17 @@ function MQTT() {
       <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria' submitFunction={includeBatteryDevice} device={deviceInModal}></NewDeviceModal>
       <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice} device={deviceInModal}></NewDeviceModal>
       <h2>Central de controle</h2>
+      <CSV data={logs} />
       <>
-      {(batteryDevices.length === 0 && energyDevices.length === 0)?<p>Não há dispositivos conectados</p>:''}
+        {(batteryDevices.length === 0 && energyDevices.length === 0) ? <p>Não há dispositivos conectados</p> :
+          <>
+            <Typography>{activateAlarm ? "Desativar alarme" : "Ativar Alarme"}</Typography>
+            <Switch onChange={toggleAlarm} />
+          </>
+        }
       </>
-      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice}/>
-      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice}/>
+      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} />
+      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice} />
     </div>
   );
 }

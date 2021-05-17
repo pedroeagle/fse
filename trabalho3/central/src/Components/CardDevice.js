@@ -14,13 +14,13 @@ function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo,
                         <Card className={modo=='energia'?'energyCard':'batteryCard'}>
                             <Typography variant="h4">{device.comodo}</Typography>
                             <Typography variant="h6">Modo: {modo}</Typography>
-                            <Typography variant="h6">{device.entrada} : {devicesInfo[device.comodo]?.estado?.entrada.toString()}</Typography>
+                            <Typography variant="h6">{device.entrada} : {devicesInfo[device.comodo]?.estado?.entrada?"on":"off"}</Typography>
                             {modo === "energia" ?
                                 <>
-                                    <Typography variant="h6">{device.saida} : {devicesInfo[device.comodo]?.estado?.saida.toString()}</Typography>
+                                    <Typography variant="h6">{device.saida} : {devicesInfo[device.comodo]?.estado?.saida?"on":"off"}</Typography>
                                     <Typography variant="h6" >Umidade: {devicesInfo[device.comodo]?.umidade} %</Typography>
                                     <Typography variant="h6" >Temperatura: {devicesInfo[device.comodo]?.temperatura} ºC</Typography>
-                                    <Button className={devicesInfo[device.comodo]?.estado?.saida?"turnOffButton":"turnOnButton"} disabled={devicesInfo[device.comodo]?.estado?.saida==undefined} onClick={(e)=>toggleDevice(device.device)}>{devicesInfo[device.comodo]?.estado?.saida? "Desligar ":"Ligar "}{device.saida}</Button>
+                                    <Button className={devicesInfo[device.comodo]?.estado?.saida?"turnOffButton":devicesInfo[device.comodo]?.estado?.saida===undefined?"disabledButton":"turnOnButton"} disabled={devicesInfo[device.comodo]?.estado?.saida==undefined} onClick={(e)=>toggleDevice(device.device, devicesInfo[device.comodo])}>{devicesInfo[device.comodo]?.estado?.saida? "Desligar ":"Ligar "}{device.saida}</Button>
                                 </> : null}
                             <Typography>MAC: {device.device}</Typography><br/>
                             <Button className="removeButton" onClick={(e)=>{remove(client, device, modo)}}>Remover dispositivo</Button>
