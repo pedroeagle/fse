@@ -18,6 +18,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "wifi.h"
+#include "send.h"
 
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle sendDataMQTTSemaphore;
@@ -34,35 +35,6 @@ xQueueHandle filaDeInterrupcao;
 static void IRAM_ATTR gpio_isr_handler(void *args) {
     int pino = (int)args;
     xQueueSendFromISR(filaDeInterrupcao, &pino, NULL);
-}
-
-void enviaEstadosCentral() {
-    cJSON *estado_json = cJSON_CreateObject();
-
-    cJSON *entrada_json;
-    int32_t estado_entrada = le_int32_nvs("estado_entrada");
-    if (estado_entrada) {
-        entrada_json = cJSON_CreateTrue();
-    } else {
-        entrada_json = cJSON_CreateFalse();
-    }
-    cJSON_AddItemReferenceToObject(estado_json, "entrada", entrada_json);
-
-#ifdef CONFIG_ENERGIA
-    cJSON *saida_json = cJSON_CreateFalse();
-    int32_t estado_saida = le_int32_nvs("estado_saida");
-    if (estado_saida) {
-        saida_json = cJSON_CreateTrue();
-    } else {
-        saida_json = cJSON_CreateFalse();
-    }
-    cJSON_AddItemReferenceToObject(estado_json, "saida", saida_json);
-#endif
-
-    cJSON *res_estado = cJSON_CreateObject();
-    cJSON_AddItemReferenceToObject(res_estado, "estado", estado_json);
-    mqtt_envia_mensagem(state_path, cJSON_Print(res_estado));
-    cJSON_Delete(res_estado);
 }
 
 int32_t le_estado_saida() {

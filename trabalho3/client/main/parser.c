@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "cJSON.h"
+#include "driver/gpio.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_system.h"
@@ -12,7 +13,7 @@
 #include "freertos/event_groups.h"
 #include "freertos/task.h"
 #include "nvs_flash.h"
-#include "driver/gpio.h"
+#include "send.h"
 
 extern xSemaphoreHandle sendDataMQTTSemaphore;
 extern int flag_run;
@@ -71,6 +72,7 @@ void parse_json(const char *response) {
             estado_saida = estado_saida ? 0 : 1;
             gpio_set_level(GPIO_LED, estado_saida);
             grava_int32_nvs("estado_saida", estado_saida);
+            enviaEstadosCentral();
         }
     }
 
