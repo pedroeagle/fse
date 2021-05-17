@@ -10,11 +10,17 @@
     padding-right: 0px;
 }
 .energyCard{
-    background-color: cornflowerblue;
+    background-color: cornflowerblue !important;
 }
 .batteryCard{
-    background-color: skyblue;
+    background-color: skyblue !important;
 }
 .removeButton:hover{
-    background-color: salmon;
+    background-color: salmon !important;
+}
+.turnOnButton{
+    background-color: aquamarine !important;
+}
+.turnOffButton{
+    background-color: salmon !important;
 }

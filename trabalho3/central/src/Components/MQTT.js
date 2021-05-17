@@ -137,22 +137,22 @@ function MQTT() {
   const removeDeviceFromAddList = (device, modo) => {
     switch (modo) {
       case "bateria":
-        setBatteryDevicesToAdd(batteryDevicesToAdd.filter((item) => item != device));
+        setBatteryDevicesToAdd(batteryDevicesToAdd.filter((item) => item !== device));
         break;
 
       case "energia":
-        setEnergyDevicesToAdd(energyDevicesToAdd.filter((item) => item != device));
+        setEnergyDevicesToAdd(energyDevicesToAdd.filter((item) => item !== device));
         break;
     }
   }
   const removeDeviceFromList = (device, modo) => {
     switch (modo) {
       case "bateria":
-        setBatteryDevices(batteryDevices.filter((item) => item.device != device));
+        setBatteryDevices(batteryDevices.filter((item) => item.device !== device));
         break;
 
       case "energia":
-        setEnergyDevices(energyDevices.filter((item) =>  item.device != device));
+        setEnergyDevices(energyDevices.filter((item) =>  item.device !== device));
         break;
     }
   }
@@ -174,7 +174,10 @@ function MQTT() {
     console.log(host)
     client.publish(host, JSON.stringify({esp_host}));
   }
-
+  const toggleDevice = (device) =>{
+    const host = newDevicesHost.replace('+', device);
+    client.publish(host, JSON.stringify({message: 'toggle'}));
+  }
   return (
     <div className="App">
       <CardDeviceToAdd text={"Dispositivo a bateria encontrado: "} devices={batteryDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='bateria' />
@@ -186,7 +189,7 @@ function MQTT() {
       {(batteryDevices.length === 0 && energyDevices.length === 0)?<p>Não há dispositivos conectados</p>:''}
       </>
       <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice}/>
-      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice}/>
+      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice}/>
     </div>
   );
 }
