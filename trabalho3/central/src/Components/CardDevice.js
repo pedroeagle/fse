@@ -1,12 +1,14 @@
 import { Button, Card, Grid, Typography } from "@material-ui/core";
 import { useEffect, useState } from 'react';
 import "./CardDevice.css";
-function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo, remove, toggleDevice }) {
+function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo, remove, toggleDevice, activatedAlarm, setAlarm }) {
     const subscribeToChannels = (comodo) => {
         subscribe(client, comodoHost.toString().replace('comodo', comodo));
     }
     return (
-        <Grid container spacing={2} className="grid" justify="flex-start" alignItems="flex-start">
+        <Grid container className="grid" justify="flex-start" alignItems="flex-start">
+            {devices.find((device)=>devicesInfo[device.comodo]?.estado?.entrada&&activatedAlarm)!=undefined?setAlarm(true):setAlarm(false)}
+            {console.log(devices.find((device)=>devicesInfo[device.comodo]?.estado?.entrada&&activatedAlarm))}
             {devices.map((device, index) => {
                 subscribeToChannels(device.comodo);
                 return (

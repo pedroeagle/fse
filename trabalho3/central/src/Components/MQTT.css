@@ -1,0 +1,15 @@
+.Alarm{
+    background-color: orangered;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+.App{
+    min-height: 100% !important;
+}
+.toggles{
+    display: flex;
+    justify-content: center;
+}
