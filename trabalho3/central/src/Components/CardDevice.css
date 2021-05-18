@@ -24,3 +24,6 @@
 .turnOffButton{
     background-color: salmon !important;
 }
+.inativo{
+    color: whitesmoke;
+}

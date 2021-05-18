@@ -34,8 +34,7 @@ function MQTT() {
   useEffect(() => {
     const c = init();
     setClient(c);
-  }, [])
-
+  }, []);
   const init = () => {
     const c = connectOnNewDevicesChannel();// mqtt.connect(host, port, clientId, onConnectionLost, onMessageArrived)
     setClient(c);
@@ -69,6 +68,7 @@ function MQTT() {
       let infoObject = devicesInfo;
       infoObject[comodo] = infoObject[comodo] ? infoObject[comodo] : {};
       infoObject[comodo][info] = JSON.parse(payloadString)[info];
+      infoObject[comodo]['last_update'] = new Date();
       setDevicesInfo({});
       setDevicesInfo(infoObject);
     }
@@ -123,14 +123,13 @@ function MQTT() {
     client.disconnect();
   }
   const removeDevice = (client, device, modo) => {
-    console.log(device, modo);
     removeDeviceFromList(device.device, modo);
     let infoObject = devicesInfo;
     infoObject[device.comodo] = {};
     setDevicesInfo({});
     setDevicesInfo(infoObject);
     const host = newDevicesHost.replace('+', device.device);
-    client.publish(host, JSON.stringify({ message: 'removido' }));
+    client?.publish(host, JSON.stringify({ message: 'removido' }));
   }
   const addDevice = (device, modo) => {
     switch (modo) {
@@ -167,21 +166,26 @@ function MQTT() {
   }
 
   const includeBatteryDevice = (device) => {
-    console.log(device);
     setBatteryDevices(batteryDevices => ([...batteryDevices, device]));
     removeDeviceFromAddList(device.device, "bateria");
     const host = newDevicesHost.replace('+', device.device);
-    const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo.toLowerCase()}/`);
-    console.log(host);
+    const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo}/`);
     client.publish(host, JSON.stringify({ esp_host }));
+    const { comodo } = device;
+    let infoObject = devicesInfo;
+    infoObject[comodo] = infoObject[comodo] ? infoObject[comodo] : {};
+    infoObject[comodo]['last_update'] = new Date();
   }
   const includeEnergyDevice = (device) => {
     setEnergyDevices(EnergyDevices => ([...EnergyDevices, device]));
     removeDeviceFromAddList(device.device, "energia");
     const host = newDevicesHost.replace('+', device.device);
-    const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo.toLowerCase()}/`);
-    console.log(host)
+    const esp_host = newDevicesHost.replace('dispositivos/+', `${device.comodo}/`);
     client.publish(host, JSON.stringify({ esp_host }));
+    const { comodo } = device;
+    let infoObject = devicesInfo;
+    infoObject[comodo] = infoObject[comodo] ? infoObject[comodo] : {};
+    infoObject[comodo]['last_update'] = new Date();
   }
   const toggleDevice = (device, info) => {
     const host = newDevicesHost.replace('+', device);
@@ -198,9 +202,9 @@ function MQTT() {
     newLogs.push({ "evento": activatedAlarm ? "ativar" : "desativar", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
     setLogs(newLogs);
   }
-  const playAlarm = (value)=>{
+  const playAlarm = (value) => {
     setAlarm(value);
-    if(value){
+    if (value) {
       let newLogs = logs;
       newLogs.push({ "evento": "acionado", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
       setLogs(newLogs);
@@ -214,20 +218,20 @@ function MQTT() {
       <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice} device={deviceInModal}></NewDeviceModal>
       <h2>Central de controle</h2>
       {alarm && activatedAlarm && audio ? <Alarm /> : ""}
-      {alarm && activatedAlarm ?<h1>O alarme foi acionado!</h1>: ""}
+      {alarm && activatedAlarm ? <h1>O alarme foi acionado!</h1> : ""}
       <CSV data={logs} />
       <>
         {(batteryDevices.length === 0 && energyDevices.length === 0) ? <p>Não há dispositivos conectados</p> :
           <div className="toggles">
             <Typography>{activatedAlarm ? "Desativar alarme" : "Ativar Alarme"}</Typography>
-            <Switch onChange={()=>{toggleAlarm()}} color="primary"/>
+            <Switch onChange={() => { toggleAlarm() }} color="primary" />
             <Typography>{audio ? "Desativar som de alarme" : "Ativar som de alarme"}</Typography>
-            <Switch checked={audio}  onChange={() => { setAudio(!audio) }} color="primary"/>
+            <Switch checked={audio} onChange={() => { setAudio(!audio) }} color="primary" />
           </div>
         }
       </>
       <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} activatedAlarm={activatedAlarm} setAlarm={playAlarm} />
-      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice} activatedAlarm={activatedAlarm} setAlarm={playAlarm} />
+      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice} activatedAlarm={activatedAlarm} setAlarm={playAlarm} setDevices={setEnergyDevices}/>
     </div>
   );
 }
