@@ -24,7 +24,7 @@ function MQTT() {
   const [deviceInModal, setDeviceInModal] = useState('');
   const [devicesInfo, setDevicesInfo] = useState({});
   const [logs, setLogs] = useState([]);
-  const [activatedAlarm, setActivatedAlarm] = useState(false);
+  const [enabledAlarm, setEnabledAlarm] = useState(false);
   const [alarm, setAlarm] = useState(false);
   const [audio, setAudio] = useState(true);
 
@@ -196,42 +196,43 @@ function MQTT() {
     setLogs(newLogs);
   }
   const toggleAlarm = () => {
-    setActivatedAlarm(!activatedAlarm);
-    setAlarm(true);
+    setEnabledAlarm(!enabledAlarm);
     let newLogs = logs;
-    newLogs.push({ "evento": activatedAlarm ? "ativar" : "desativar", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
+    newLogs.push({ "evento": enabledAlarm ? "ativar" : "desativar", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
     setLogs(newLogs);
   }
   const playAlarm = (value) => {
+    let newLogs = logs;
     setAlarm(value);
     if (value) {
-      let newLogs = logs;
       newLogs.push({ "evento": "acionado", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
-      setLogs(newLogs);
+    }else{
+      newLogs.push({ "evento": "desacionado pelo usuário", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
     }
+    setLogs(newLogs);
   }
   return (
-    <div className={alarm && activatedAlarm ? "App Alarm" : "App"}>
+    <div className={alarm && enabledAlarm ? "App Alarm" : "App"}>
       <CardDeviceToAdd text={"Dispositivo a bateria encontrado: "} devices={batteryDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='bateria' />
       <CardDeviceToAdd text={"Dispositivo conectado a energia encontrado: "} devices={energyDevicesToAdd} acceptDeviceFunction={addDevice} denyDeviceFunction={removeDeviceFromAddList} modo='energia' />
       <NewDeviceModal modalVisible={modalNewBatteryDeviceVisible} setModalVisible={setModalNewBatteryDeviceVisible} modo='bateria' submitFunction={includeBatteryDevice} device={deviceInModal}></NewDeviceModal>
       <NewDeviceModal modalVisible={modalNewEnergyDeviceVisible} setModalVisible={setModalNewEnergyDeviceVisible} modo='energia' submitFunction={includeEnergyDevice} device={deviceInModal}></NewDeviceModal>
       <h2>Central de controle</h2>
-      {alarm && activatedAlarm && audio ? <Alarm /> : ""}
-      {alarm && activatedAlarm ? <h1>O alarme foi acionado!</h1> : ""}
+      {alarm && enabledAlarm && audio ? <Alarm /> : ""}
+      {alarm && enabledAlarm ? <h1>O alarme foi acionado!</h1> : ""}
       <CSV data={logs} />
       <>
         {(batteryDevices.length === 0 && energyDevices.length === 0) ? <p>Não há dispositivos conectados</p> :
           <div className="toggles">
-            <Typography>{activatedAlarm ? "Desativar alarme" : "Ativar Alarme"}</Typography>
+            <Typography>{enabledAlarm ? "Desativar alarme" : "Ativar Alarme"}</Typography>
             <Switch onChange={() => { toggleAlarm() }} color="primary" />
             <Typography>{audio ? "Desativar som de alarme" : "Ativar som de alarme"}</Typography>
             <Switch checked={audio} onChange={() => { setAudio(!audio) }} color="primary" />
           </div>
         }
       </>
-      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} activatedAlarm={activatedAlarm} setAlarm={playAlarm} />
-      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice} activatedAlarm={activatedAlarm} setAlarm={playAlarm} setDevices={setEnergyDevices}/>
+      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} enabledAlarm={enabledAlarm} setAlarm={playAlarm} />
+      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice} enabledAlarm={enabledAlarm} setAlarm={playAlarm} setDevices={setEnergyDevices}/>
     </div>
   );
 }
