@@ -27,8 +27,8 @@ xSemaphoreHandle sendDataMQTTSemaphore;
 #define GPIO_LED CONFIG_ESP_LED_GPIO_NUMBER
 #define GPIO_BUTTON CONFIG_ESP_BUTTON_GPIO_NUMBER
 
-char central_path[100], comodo_path[100];
-char humid_path[100], temp_path[100], state_path[100];
+char central_path[150], comodo_path[150];
+char humid_path[150], temp_path[150], state_path[150];
 int flag_run = 0;
 xQueueHandle filaDeInterrupcao;
 
@@ -181,11 +181,17 @@ void configuraGPIO() {
 
 void defineCentralPath() {
     // Cria e salva o path home
-    uint8_t mac;
-    esp_base_mac_addr_get(&mac);
+    uint8_t mac[6] = {0};
+    char mac_address[14];
+
+    memset(mac_address, '\0', sizeof mac_address);
     memset(central_path, '\0', sizeof central_path);
+
+    esp_efuse_mac_get_default(mac);
+    sprintf(mac_address, "%x%x%x%x%x%x", mac[0], mac[1], mac[2], mac[3], mac[4],
+            mac[5]);
     strcpy(central_path, "fse2020/160000840/dispositivos/");
-    itoa(mac, &central_path[strlen(central_path)], 10);
+    strcat(central_path, mac_address);
     grava_string_nvs("central_path", central_path);
 }
 
