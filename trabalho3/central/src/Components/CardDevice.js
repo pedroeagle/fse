@@ -17,7 +17,6 @@ function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo,
                     const device_last_update = new Date(devicesInfo[device.comodo].last_update).getTime();
                     const tempo_inativo = Math.abs(current - device_last_update);
                     if (tempo_inativo > (0.5/*minutos*/) * (60/*segundos*/) * (1000/*milisegundos*/) || devicesInfo[device.comodo].last_update === undefined) {
-
                         setInativos(new Set(inativos.add(device.device)));
                     } else {
                         try {
