@@ -5,7 +5,7 @@ const CSV = ({ data }) => {
     const headers = [{ key: "evento" }, { key: "dispositivo" }, { key: "horario" }];
     return (
         <div className="downloadDiv">
-            {data.length > 0 ? <CSVLink className="downloadLink" data={data}>Download Logs</CSVLink> : ''}
+            {data.length > 0 ? <CSVLink className="downloadLink" data={data} filename="Logs - Central de Controle.csv">Download Logs</CSVLink> : ''}
         </div>
     );
 }

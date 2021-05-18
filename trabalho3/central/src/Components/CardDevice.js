@@ -1,7 +1,7 @@
 import { Button, Card, Grid, Typography } from "@material-ui/core";
 import { useEffect, useState } from 'react';
 import "./CardDevice.css";
-function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo, remove, toggleDevice, enabledAlarm, setAlarm, setDevices }) {
+function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo, remove, toggleDevice, enabledAlarm, setAlarm, setDevices, alarm }) {
     const subscribeToChannels = (comodo) => {
         subscribe(client, comodoHost.toString().replace('comodo', comodo));
     }
@@ -40,7 +40,7 @@ function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo,
                             <Typography variant="h4">{device.comodo}</Typography>
                             <Typography variant="h6">Modo: {modo}</Typography>
                             <Typography variant="h6">{device.entrada} : {devicesInfo[device.comodo]?.estado?.entrada ? "on" : "off"}</Typography>
-                            {devicesInfo[device.comodo]?.estado?.entrada && enabledAlarm? setAlarm(true):null}
+                            {devicesInfo[device.comodo]?.estado?.entrada && enabledAlarm && !alarm? setAlarm(true):null}
                             {modo === "energia" ?
                                 <>
                                     <Typography variant="h6">{device.saida} : {devicesInfo[device.comodo]?.estado?.saida ? "on" : "off"}</Typography>

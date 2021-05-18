@@ -191,25 +191,35 @@ function MQTT() {
     const host = newDevicesHost.replace('+', device);
     client.publish(host, JSON.stringify({ message: 'toggle' }));
     const event = info.estado?.saida ? "desligar" : "ligar";
-    let newLogs = logs;
-    newLogs.push({ "evento": event, "dispositivo": device, "horario": new Date().toLocaleString() });
-    setLogs(newLogs);
+    addLogs({ "evento": event, "dispositivo": device});
   }
   const toggleAlarm = () => {
     setEnabledAlarm(!enabledAlarm);
-    let newLogs = logs;
-    newLogs.push({ "evento": enabledAlarm ? "ativar" : "desativar", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
-    setLogs(newLogs);
+    if(alarm){
+      playAlarm(false);
+    }
+    addLogs({"evento": enabledAlarm ? "desativar": "ativar", "dispositivo": "alarme"});
   }
   const playAlarm = (value) => {
-    let newLogs = logs;
     setAlarm(value);
     if (value) {
-      newLogs.push({ "evento": "acionado", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
+      addLogs({"evento": "acionado", "dispositivo": "alarme"});
     }else{
-      newLogs.push({ "evento": "desacionado pelo usuário", "dispositivo": "alarme", "horario": new Date().toLocaleString() });
+      addLogs({ "evento": "desacionado pelo usuário", "dispositivo": "alarme"});
     }
-    setLogs(newLogs);
+  }
+  const addLogs=(object)=>{
+    const date = new Date().toLocaleString();
+    let objectToAdd = object;
+    objectToAdd['horario'] = date;
+    let newLogs = logs;
+    if(!newLogs.find((log)=>
+      log.evento===object.evento&&log.dispositivo===object.dispositivo&&log.horario===date
+      )){
+      newLogs.push(objectToAdd);
+      setLogs([]);
+      setLogs(newLogs);
+    }
   }
   return (
     <div className={alarm && enabledAlarm ? "App Alarm" : "App"}>
@@ -231,8 +241,8 @@ function MQTT() {
           </div>
         }
       </>
-      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} enabledAlarm={enabledAlarm} setAlarm={playAlarm} />
-      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice} enabledAlarm={enabledAlarm} setAlarm={playAlarm} setDevices={setEnergyDevices}/>
+      <CardDevice devices={batteryDevices} modo="bateria" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} enabledAlarm={enabledAlarm} setAlarm={playAlarm} alarm={alarm} />
+      <CardDevice devices={energyDevices} modo="energia" comodoHost={comodoHost} client={client} subscribe={subscribeAlreadyConnected} devicesInfo={devicesInfo} remove={removeDevice} toggleDevice={toggleDevice} enabledAlarm={enabledAlarm} setAlarm={playAlarm} setDevices={setEnergyDevices} alarm={alarm}/>
     </div>
   );
 }
