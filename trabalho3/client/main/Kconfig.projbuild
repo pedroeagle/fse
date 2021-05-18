@@ -1,4 +1,4 @@
-menu "Configuração do Wifi Configuration"
+menu "Configuração do Wifi"
 
     config ESP_WIFI_SSID
         string "WiFi SSID"
@@ -18,3 +18,38 @@ menu "Configuração do Wifi Configuration"
         help
             Configure o valor máximo de tentativas de conexão.
 endmenu
+
+menu "Configuração GPIO"
+
+    config ESP_DHT_GPIO_NUMBER
+        int "Número da Porta da GPIO conectada ao DHT11."
+        default 4
+        help
+            Configure o valor da porta que será conectada ao sensor DHT11 na sua ESP.
+
+    config ESP_LED_GPIO_NUMBER
+        int "Número da Porta da GPIO conectada ao LED."
+        default 2
+        help
+            Configure o valor da porta que será conectada ao sensor DHT11 na sua ESP.
+
+    config ESP_BUTTON_GPIO_NUMBER
+        int "Número da Porta da GPIO conectada ao Botão."
+        default 0
+        help
+            Configure o valor da porta que será conectada ao Botão na sua ESP.
+endmenu
+
+menu "Configuração Modo de Funcionamento"
+    config MODO_DE_FUNCIONAMENTO
+        choice
+            bool "Selecione uma Modo de Funcionamento da ESP"
+                default ENERGIA
+            config ENERGIA
+                bool "Habilitar o modo ENERGIA"
+            config BATERIA
+                bool "Habilitar o modo BATERIA (Low Power)"
+        endchoice  
+endmenu
+  
+
