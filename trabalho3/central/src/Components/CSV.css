@@ -1,0 +1,5 @@
+.downloadLink{
+    display: flex !important;
+    justify-content: flex-end !important;
+    padding-right: 20px;
+}
