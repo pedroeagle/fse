@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import logo from '../logo.svg';
 import * as mqtt from 'react-paho-mqtt';
 import env from "react-dotenv";
 import CardDeviceToAdd from './CardDeviceToAdd';
@@ -28,12 +27,10 @@ function MQTT() {
   const [alarm, setAlarm] = useState(false);
   const [audio, setAudio] = useState(true);
 
-  const topic = '';
-  const options = {};
-
   useEffect(() => {
     const c = init();
     setClient(c);
+    // eslint-disable-next-line
   }, []);
   const init = () => {
     const c = connectOnNewDevicesChannel();// mqtt.connect(host, port, clientId, onConnectionLost, onMessageArrived)
@@ -62,9 +59,11 @@ function MQTT() {
             energyDevicesToAdd.indexOf(mac) < 0 ?
               [...energyDevicesToAdd, mac] : energyDevicesToAdd);
           break;
+        default:
+          break;
       }
     } else {
-      const [_, comodo, info] = destinationName.match(/.*\/(.*)\/(.*)/);
+      const [ , comodo, info] = destinationName.match(/.*\/(.*)\/(.*)/);
       let infoObject = devicesInfo;
       infoObject[comodo] = infoObject[comodo] ? infoObject[comodo] : {};
       infoObject[comodo][info] = JSON.parse(payloadString)[info];
@@ -82,10 +81,6 @@ function MQTT() {
     subscribeWithClient(client, host);
     return client;
   }
-  const sendPayload = () => {
-    const payload = mqtt.parsePayload("Hello", "World"); // topic, payload
-    client.send(payload);
-  }
 
   const onConnectionLost = responseObject => {
     if (responseObject.errorCode !== 0) {
@@ -93,35 +88,18 @@ function MQTT() {
     }
   }
 
-  // called when messages arrived
-  const onMessageArrived = message => {
-    console.log("onMessageArrived: " + message.payloadString);
-  }
-
-
-  // called when subscribing topic(s)
   const subscribeWithClient = (client, topic, options) => {
     client.connect({
       onSuccess: () => {
         client.subscribe(topic, options);
       }
-    }); // called when the client connects
+    });
   }
+
   const subscribeAlreadyConnected = (client, topic, options) => {
     client.subscribe(topic, options);
   }
 
-  // called when subscribing topic(s)
-  const onUnsubscribe = () => {
-    for (var i = 0; i < topic.length; i++) {
-      client.unsubscribe(topic[i], options);
-    }
-  }
-
-  // called when disconnecting the client
-  const onDisconnect = () => {
-    client.disconnect();
-  }
   const removeDevice = (client, device, modo) => {
     removeDeviceFromList(device.device, modo);
     let infoObject = devicesInfo;
@@ -139,6 +117,8 @@ function MQTT() {
       case "bateria":
         setModalNewBatteryDeviceVisible(true);
         break;
+      default:
+        break;
     }
     setDeviceInModal(device);
   }
@@ -147,9 +127,10 @@ function MQTT() {
       case "bateria":
         setBatteryDevicesToAdd(batteryDevicesToAdd.filter((item) => item !== device));
         break;
-
       case "energia":
         setEnergyDevicesToAdd(energyDevicesToAdd.filter((item) => item !== device));
+        break;
+      default:
         break;
     }
   }
@@ -158,9 +139,10 @@ function MQTT() {
       case "bateria":
         setBatteryDevices(batteryDevices.filter((item) => item.device !== device));
         break;
-
       case "energia":
         setEnergyDevices(energyDevices.filter((item) => item.device !== device));
+        break;
+      default:
         break;
     }
   }
