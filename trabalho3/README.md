@@ -35,6 +35,12 @@ $ npm install --force #ou yarn install
 Resultado esperado após a instalação: <br/>
 ![npm install](img/npm_install.png)
 
+É necessário criar um arquivo ```.env``` com a variável MATRICULA com o numero de matrícula que será utilizado no path de comunicação.
+Conteúdo do .env que deve ser colocado no diretório 'central/':
+```
+MATRICULA=17123456
+```
+
 ``` bash
 # Iniciar a aplicação
 $ npm run start #ou yarn run start

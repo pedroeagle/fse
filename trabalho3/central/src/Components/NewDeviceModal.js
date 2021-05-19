@@ -1,6 +1,5 @@
 import { Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
-import Input from '@material-ui/core/Input';
-import { Button, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import './NewDeviceModal.css';
 import { useState } from 'react';
 function NewDeviceModal({ modalVisible, setModalVisible, modo, submitFunction, device }) {
