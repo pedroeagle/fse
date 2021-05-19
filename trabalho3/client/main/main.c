@@ -168,6 +168,9 @@ void enviaDadosServidor(void *params) {
 
             enviaEstadosCentral();
             vTaskDelay(2000 / portTICK_PERIOD_MS);
+        } else {
+            enviaEstadosCentral();
+            vTaskDelay(2000 / portTICK_PERIOD_MS);
         }
 
         printf("Entrando em modo sleep...\n");
