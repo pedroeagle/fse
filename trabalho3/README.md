@@ -20,7 +20,7 @@ O Projeto em questao busca realizar a implementação de um sistema de controle,
 
 O seguinte link contém um vídeo de exemplo de funcionamento da aplicação, configuração e uso do presente projeto:
 
-* [link](link)
+* [Trabalho Final - FSE 2/2020](https://youtu.be/5r1ApviQ0eI)
 
 ## Execução
 
@@ -168,6 +168,8 @@ Assim, será possível acompanhar diferentes status e feedbacks do dispositivo e
 
 ![mqtt](img/mqtt.png)
 
+### **6 - Reset da placa**
+Ao pressionar e segurar o botão de entrada da placa por cerca de 5 segundos a placa é então se desconecta do servidor central, reinicia sua utilização e fica disponível novamente como um dispositivo novo. Para ter certeza de que o modo foi acionado basta esperar que o led de saída pisque por 3 ou 4 vezes antes de reiniciar o dispositivo. Como no trabalho não foi definido protocolo de desconexão, do servidor central, a partir da esp isso é feito manualmente removendo o dispositivo da central e o aceitando novamente.
 
 ## **Servidor Central**
 
@@ -220,10 +222,6 @@ Caso um dispositivo em modo energia fique 30 segundos sem atualizar seus estados
 Caso o alarme esteja ativado, se um dispositivo de entrada de uma esp32 em qualquer modo for acionado é então disparado um alarme que só pode ser desacionado pelo usuário na central de controle. O alarme deixa a tela vermelha além de tocar um som que pode ser mutado.
 ![alarm](img/alarm.png)<br/>
 
+É possível ainda realizar o download dos logs de acionamento do alarme e dispositivos de saída por meio do link no canto superior direito da página.
 
-## Referências
-
-- [Biblioteca DHT11 para ESP-IDF ESP32](https://github.com/0nism/esp32-DHT11)
-
-- [Eclipse Mosquitto - Broker MQTT](https://mosquitto.org/)
-
+![csv](img/csv.png)<br/>
