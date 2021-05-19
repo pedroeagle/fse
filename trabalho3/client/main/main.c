@@ -9,6 +9,7 @@
 #include "esp_event.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
+#include "esp_sleep.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "flash.h"
@@ -37,12 +38,13 @@ static void IRAM_ATTR gpio_isr_handler(void *args) {
     xQueueSendFromISR(filaDeInterrupcao, &pino, NULL);
 }
 
-int32_t le_estado_saida() {
-#ifdef CONFIG_BATERIA
-    return 0;
-#endif
-    int32_t estado_saida = le_int32_nvs("estado_saida");
-    return estado_saida;
+void piscaLed() {
+    for (int blips = 3; blips >= 0; blips--) {
+        gpio_set_level(GPIO_LED, 1);
+        vTaskDelay(400 / portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_LED, 0);
+        vTaskDelay(400 / portTICK_PERIOD_MS);
+    }
 }
 
 void trataInterrupcaoBotao(void *params) {
@@ -62,6 +64,7 @@ void trataInterrupcaoBotao(void *params) {
                     printf("Manteve o botão pressionado: %d\n",
                            contadorPressionado);
                     if (contadorPressionado == 50) {
+                        piscaLed();
                         nvs_flash_erase_partition("DadosNVS");
                         esp_restart();
                         break;
@@ -117,11 +120,64 @@ void definePaths() {
     strcat(state_path, "estado");
 }
 
+void startSleep() {
+    // Coloca a ESP no Deep Sleep
+    esp_deep_sleep_start();
+}
+
+void trataBotaoPressionadoLowPower() {
+    // Trata segurar botão para reiniciar
+    int estado = gpio_get_level(GPIO_BUTTON);
+    if (estado == 0) {
+        gpio_isr_handler_remove(GPIO_BUTTON);
+        int contadorPressionado = 0;
+        printf("Apertou o botão\n");
+        while (gpio_get_level(GPIO_BUTTON) == estado) {
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            contadorPressionado++;
+            printf("Manteve o botão pressionado: %d\n", contadorPressionado);
+            if (contadorPressionado == 50) {
+                piscaLed();
+                nvs_flash_erase_partition("DadosNVS");
+                esp_restart();
+                break;
+            }
+        }
+        // Habilitar novamente a interrupção
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+        gpio_isr_handler_add(GPIO_BUTTON, gpio_isr_handler,
+                             (void *)GPIO_BUTTON);
+    }
+}
+
 void enviaDadosServidor(void *params) {
     if (xSemaphoreTake(sendDataMQTTSemaphore, portMAX_DELAY)) {
         // Define os paths
         definePaths();
+
+#ifdef CONFIG_BATERIA
+        // Trata Botão pressionado
+        trataBotaoPressionadoLowPower();
+
+        // Trata botão pressionado ao acordar
+        if (flag_run) {
+            printf("O botão foi acionado. Botão: %d\n", GPIO_BUTTON);
+            int32_t estado_entrada = le_int32_nvs("estado_entrada");
+            estado_entrada = estado_entrada ? 0 : 1;
+            grava_int32_nvs("estado_entrada", estado_entrada);
+
+            enviaEstadosCentral();
+            vTaskDelay(2000 / portTICK_PERIOD_MS);
+        } else {
+            enviaEstadosCentral();
+            vTaskDelay(2000 / portTICK_PERIOD_MS);
+        }
+
+        printf("Entrando em modo sleep...\n");
+        startSleep();
+#else
         enviaEstadosCentral();
+#endif
 
         // Loop da task
         while (true) {
@@ -153,7 +209,6 @@ void enviaDadosServidor(void *params) {
 }
 
 void configuraGPIO() {
-#ifdef CONFIG_ENERGIA
     // Configuração dos pinos dos LEDs
     gpio_pad_select_gpio(GPIO_LED);
     // Configura os pinos dos LEDs como Output
@@ -166,7 +221,6 @@ void configuraGPIO() {
 
     int32_t estado_saida = le_int32_nvs("estado_saida");
     gpio_set_level(GPIO_LED, estado_saida);
-#endif
 
     // Configura o resistor de Pull-up para o botão (por padrão a entrada
     // estará em Um)
@@ -177,6 +231,12 @@ void configuraGPIO() {
 
     // Configura pino para interrupção
     gpio_set_intr_type(GPIO_BUTTON, GPIO_INTR_NEGEDGE);
+
+#ifdef CONFIG_BATERIA
+    // Configura o retorno
+    esp_sleep_enable_ext0_wakeup(GPIO_BUTTON, 0);
+    printf("Botão: Interrupções em modo Wake\n");
+#endif
 }
 
 void defineCentralPath() {
@@ -202,13 +262,11 @@ void defineVariaveisEstado() {
         grava_int32_nvs("estado_entrada", estado_entrada);
     }
 
-#ifdef CONFIG_ENERGIA
     int32_t estado_saida = le_int32_nvs("estado_saida");
     if (estado_saida == -1) {
         estado_saida = 0;
         grava_int32_nvs("estado_saida", estado_saida);
     }
-#endif
 }
 
 void app_main() {
