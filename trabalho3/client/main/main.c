@@ -38,14 +38,6 @@ static void IRAM_ATTR gpio_isr_handler(void *args) {
     xQueueSendFromISR(filaDeInterrupcao, &pino, NULL);
 }
 
-int32_t le_estado_saida() {
-#ifdef CONFIG_BATERIA
-    return 0;
-#endif
-    int32_t estado_saida = le_int32_nvs("estado_saida");
-    return estado_saida;
-}
-
 void piscaLed() {
     for (int blips = 3; blips >= 0; blips--) {
         gpio_set_level(GPIO_LED, 1);
@@ -133,34 +125,40 @@ void startSleep() {
     esp_deep_sleep_start();
 }
 
+void trataBotaoPressionadoLowPower() {
+    // Trata segurar botão para reiniciar
+    int estado = gpio_get_level(GPIO_BUTTON);
+    if (estado == 0) {
+        gpio_isr_handler_remove(GPIO_BUTTON);
+        int contadorPressionado = 0;
+        printf("Apertou o botão\n");
+        while (gpio_get_level(GPIO_BUTTON) == estado) {
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            contadorPressionado++;
+            printf("Manteve o botão pressionado: %d\n", contadorPressionado);
+            if (contadorPressionado == 50) {
+                piscaLed();
+                nvs_flash_erase_partition("DadosNVS");
+                esp_restart();
+                break;
+            }
+        }
+        // Habilitar novamente a interrupção
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+        gpio_isr_handler_add(GPIO_BUTTON, gpio_isr_handler,
+                             (void *)GPIO_BUTTON);
+    }
+}
+
 void enviaDadosServidor(void *params) {
     if (xSemaphoreTake(sendDataMQTTSemaphore, portMAX_DELAY)) {
         // Define os paths
         definePaths();
 
 #ifdef CONFIG_BATERIA
-        // Trata segurar botão para reiniciar
-        int estado = gpio_get_level(GPIO_BUTTON);
-        if (estado == 0) {
-            gpio_isr_handler_remove(GPIO_BUTTON);
-            int contadorPressionado = 0;
-            printf("Apertou o botão\n");
-            while (gpio_get_level(GPIO_BUTTON) == estado) {
-                vTaskDelay(50 / portTICK_PERIOD_MS);
-                contadorPressionado++;
-                printf("Manteve o botão pressionado: %d\n",
-                       contadorPressionado);
-                if (contadorPressionado == 50) {
-                    piscaLed();
-                    nvs_flash_erase_partition("DadosNVS");
-                    esp_restart();
-                    break;
-                }
-            }
-            // Habilitar novamente a interrupção
-            vTaskDelay(50 / portTICK_PERIOD_MS);
-            gpio_isr_handler_add(GPIO_BUTTON, gpio_isr_handler, (void *)GPIO_BUTTON);
-        }
+        // Trata Botão pressionado
+        trataBotaoPressionadoLowPower();
+
         // Trata botão pressionado ao acordar
         if (flag_run) {
             printf("O botão foi acionado. Botão: %d\n", GPIO_BUTTON);
@@ -234,9 +232,7 @@ void configuraGPIO() {
 #ifdef CONFIG_BATERIA
     // Configura o retorno
     esp_sleep_enable_ext0_wakeup(GPIO_BUTTON, 0);
-
-    printf("Configura wake pelo botão\n");
-
+    printf("Botão: Interrupções em modo Wake\n");
 #endif
 }
 
@@ -268,7 +264,6 @@ void defineVariaveisEstado() {
         estado_saida = 0;
         grava_int32_nvs("estado_saida", estado_saida);
     }
-
 }
 
 void app_main() {
