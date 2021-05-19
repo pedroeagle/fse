@@ -28,6 +28,7 @@ function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo,
             }
         }, 1000);
         return () => clearInterval(id);
+        // eslint-disable-next-line
     }, []);
     return (
         <Grid container spacing={2} className="grid" justify="flex-start" alignItems="flex-start">
@@ -35,7 +36,7 @@ function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo,
                 subscribeToChannels(device.comodo);
                 return (
                     <Grid item md={3} key={index} className="list">
-                        <Card className={modo == 'energia' ? 'energyCard' : 'batteryCard'}>
+                        <Card className={modo === 'energia' ? 'energyCard' : 'batteryCard'}>
                             <Typography variant="h4">{device.comodo}</Typography>
                             <Typography variant="h6">Modo: {modo}</Typography>
                             <Typography variant="h6">{device.entrada} : {devicesInfo[device.comodo]?.estado?.entrada ? "on" : "off"}</Typography>
@@ -45,7 +46,7 @@ function CardDevice({ devices, modo, subscribe, comodoHost, client, devicesInfo,
                                     <Typography variant="h6">{device.saida} : {devicesInfo[device.comodo]?.estado?.saida ? "on" : "off"}</Typography>
                                     <Typography variant="h6" >Umidade: {devicesInfo[device.comodo]?.umidade} %</Typography>
                                     <Typography variant="h6" >Temperatura: {devicesInfo[device.comodo]?.temperatura} ºC</Typography>
-                                    <Button className={devicesInfo[device.comodo]?.estado?.saida ? "turnOffButton" : devicesInfo[device.comodo]?.estado?.saida === undefined ? "disabledButton" : "turnOnButton"} disabled={devicesInfo[device.comodo]?.estado?.saida == undefined} onClick={(e) => toggleDevice(device.device, devicesInfo[device.comodo])}>{devicesInfo[device.comodo]?.estado?.saida ? "Desligar " : "Ligar "}{device.saida}</Button>
+                                    <Button className={devicesInfo[device.comodo]?.estado?.saida ? "turnOffButton" : devicesInfo[device.comodo]?.estado?.saida === undefined ? "disabledButton" : "turnOnButton"} disabled={devicesInfo[device.comodo]?.estado?.saida === undefined} onClick={(e) => toggleDevice(device.device, devicesInfo[device.comodo])}>{devicesInfo[device.comodo]?.estado?.saida ? "Desligar " : "Ligar "}{device.saida}</Button>
                                 </> : null}
                             <Typography>MAC: {device.device}</Typography><br />
                             <Typography>Última atualização: {devicesInfo[device.comodo]?.last_update?.toLocaleString()}</Typography>

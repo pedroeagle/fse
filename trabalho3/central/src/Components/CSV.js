@@ -2,6 +2,7 @@ import { CSVLink } from "react-csv";
 import "./CSV.css"
 
 const CSV = ({ data }) => {
+    // eslint-disable-next-line
     const headers = [{ key: "evento" }, { key: "dispositivo" }, { key: "horario" }];
     return (
         <div className="downloadDiv">
